@@ -79,7 +79,7 @@ void setup () {
   Serial.println ("Wait");
   setupUno();
   reset();
-  Serial.print(F("1802UNOv3 Free Memory=")); // just a little check, to avoid running out of RAM!
+  Serial.print(F("1802UNOv4 Free Memory=")); // just a little check, to avoid running out of RAM!
   Serial.println(freeRam());
 }
 

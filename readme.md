@@ -1,4 +1,4 @@
-1802 UNO
+1802 UNO v4
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -26,7 +26,7 @@ The keyboard is mapped like this:
 
 Serial Port
 ===
-On a terminal:
+On a terminal (9600 8 N 1):
 
 * ST=^N  
 * RS=^R 
@@ -53,6 +53,16 @@ Here's a simple terminal program:
 
 Remember to turn the terminal front panel off with | before you try this.
 
+Loading and Saving RAM
+===
+With a serial port connected, you can send the ? command to get a dump of all 1K of memory.
+
+You can also set memory by sending back the string returned by the ? command. You can also make your own string using the following format:
+
+@address:byte byte byte byte .
+
+Everything is in ASCII, so "@0000:7A 7B ." is 13 bytes. Note that you don't need all the digits (e.g., "@0:5 2 1 FF ." is OK. Also you must have a space betwween bytes and before the period which ends the transmission. The only characters that matter are the @ sign, the period, and the hex digits (upper or lower case). So you could just as well say "@0000=7a,7b&." if you wanted to.
+
 LEDs
 ===
 
@@ -70,8 +80,6 @@ There is no telling how many instruction miscodings I've made.
 
 Future Plans
 ===
-Would be nice to have a way to read/write files to the serial terminal, if present.
-
 Would like to have an I/O port (7) to control the address display use and a way to set the address display.
 
 Hackaday

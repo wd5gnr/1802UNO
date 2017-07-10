@@ -67,16 +67,73 @@ int exec1802(int ch)
   {
     int ptr;
     reset();
-    for (ptr=0;ptr<(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) EEPROM.write(ptr,ram[ptr]);
+    for (ptr=0;ptr<=(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) EEPROM.write(ptr,ram[ptr]);
     return 0;
   }
   if (ch=='<' && mp==0 && runstate==0)  // load 1K from EEPROM if not MP and not running
   {
     int ptr;
-    for (ptr=0;ptr<(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) ram[ptr]=EEPROM.read(ptr);
+    for (ptr=0;ptr<=(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) ram[ptr]=EEPROM.read(ptr);
     reset();
     return 0;
   }
+  if (ch=='@')
+  {
+    uint16_t ptr=0;
+    uint8_t val=0;
+    int state=0;
+    while (state==0)
+    {
+      int c;
+      while ((c=Serial.read())==-1);
+      if ((c>='0'&&c<='9')||(c>='a'&&c<='f')||(c>='A'&&c<='F'))
+      {
+        ptr<<=4;
+        if (c>='a') c=c-'a'+10; else if (c>='A') c=c-'A'+10; else c-='0';
+        ptr+=c;
+      }
+     else
+     {
+       state=1;
+     }
+    }
+    while (state==1)
+   {
+    int c;
+    while ((c=Serial.read())==-1);
+    if ((c>='0'&&c<='9')||(c>='a'&&c<='f')||(c>='A'&&c<='F'))
+    {
+      val<<=4;
+      if (c>='a') c=c-'a'+10; else if (c>='A') c=c-'A'+10; else c-='0';
+      val+=c;
+    }
+    else if (c=='.') state=3; else
+    {
+      ram[ptr++]=val;
+      val=0;
+    }
+   }
+   return 1;
+  }
+  if (ch=='?')
+  {
+    uint16_t ptr;
+    int group=0;
+    Serial.println("@0000:");
+    for (ptr=0;ptr<=MAXMEM;ptr++)
+    {
+      Serial.print(ram[ptr],HEX);
+      group++;
+      if (group==16)
+      {
+        Serial.print('\n');
+        group=0;
+      }
+      else Serial.print(' ');
+    }
+    Serial.print(".\n");
+    return 1;
+    }
 // regular keys
   if (ch==KEY_ST && runstate==1) { runstate=0; caddress=reg[p]; }
   // Should we start running?
@@ -167,7 +224,7 @@ uint8_t input(uint8_t port)
 void output(uint8_t port, uint8_t val)
 {
   if (port==1) Serial.print((char)val);
-  else if (port==4) data=val; 
+  else if (port==4) data=val;
   else if (port==7)
   {
     noserial=val&1;  // set 1 to use serial port as I/O, else use as front panel
