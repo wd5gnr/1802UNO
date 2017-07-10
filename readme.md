@@ -72,9 +72,7 @@ Future Plans
 ===
 Would be nice to have a way to read/write files to the serial terminal, if present.
 
-Would like to make an I/O port that sends data to/from the serial port, too.
-
-Would like to have an I/O port to control the address display use and a way to set the address display.
+Would like to have an I/O port (7) to control the address display use and a way to set the address display.
 
 Hackaday
 ===
