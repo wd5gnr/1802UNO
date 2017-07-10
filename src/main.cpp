@@ -17,7 +17,7 @@
 // How many cycles between display refreshes?
 // Higher makes the simulation faster, but the screen more blinky
 #define DISPLAY_DIVSOR 16  // number of ticks between display refresh
-
+#define SERIAL_ESCAPE '|'  // turn terminal input into real terminal input
 
 
 
@@ -87,10 +87,12 @@ void setup () {
 // main loop
 void loop()
 {
-  if (Serial.available())  // if serial input, process that
+
+  if (noserial==0 && Serial.available())  // if serial input, process that
   {
    curkey=Serial.read();
-   exec1802(curkey);
+   if (curkey==SERIAL_ESCAPE) noserial=1;   // one way ticket
+   else exec1802(curkey);
    curkey=0;
   }
   scanKeys();   // scan the keyboard

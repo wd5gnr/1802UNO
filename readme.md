@@ -22,7 +22,7 @@ The keyboard is mapped like this:
 * SST - Enter load mode
 * 0-F - Build up hex number. Accumulates 16-bits although you can only see the lower 8. For load mode, the lower 8 is used. For AD all 16-bits are used.
 * SST - Hold down for one second to save RAM to EEPROM
-* + - Hold down for one second when not running and not memory protected to read RAM from EEPROM
+* Plus - Hold down for one second when not running and not memory protected to read RAM from EEPROM
 
 Serial Port
 ===
@@ -39,6 +39,19 @@ On a terminal:
 * Plus (1 sec) >
 
 That means that like KIM UNO, you don't need the hardware to run it (well, you do need the Arduino).
+
+In addition, you can write to the terminal from 1802 code at port 1. If you
+want to read from the terminal, you can enter a | character. Once you do,
+the terminal will not act as a front panel anymore.
+
+The 1802 code can control that mode by writing a 1 to port 7 to disable the
+serial front panel. A zero will reenable it.
+
+Here's a simple terminal program:
+
+0000: 69 32 00 64 30 00
+
+Remember to turn the terminal front panel off with | before you try this.
 
 LEDs
 ===

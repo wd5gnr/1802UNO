@@ -15,7 +15,7 @@ int addstate=0; // this is bogus but handy
 unsigned int caddress;  // current load address
 unsigned int data;      // data
 
-
+int noserial=0;
 
 // CPU registers and stuff
 uint16_t reg[16];
@@ -63,14 +63,14 @@ int exec1802(int ch)
 // Should we stop running?
 
 // meta keys (1 second press)
-  if (ch=='>')
+  if (ch=='>')  // save 1K to EEPROM
   {
     int ptr;
     reset();
     for (ptr=0;ptr<(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) EEPROM.write(ptr,ram[ptr]);
     return 0;
   }
-  if (ch=='<')
+  if (ch=='<' && mp==0 && runstate==0)  // load 1K from EEPROM if not MP and not running
   {
     int ptr;
     for (ptr=0;ptr<(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) ram[ptr]=EEPROM.read(ptr);
@@ -151,15 +151,27 @@ int exec1802(int ch)
 
 
 // Input from any port gives you the data register
+// except port 1 is serial input
 uint8_t input(uint8_t port)
 {
+  if (port==1)
+  {
+    int rv=Serial.read();
+    if (rv==-1) rv=0;
+    return rv;
+  }
   return data;
 }
 
 // Output to any port writes to the data display
 void output(uint8_t port, uint8_t val)
 {
-  setdata(val); // should only do one port but for now....
+  if (port==1) Serial.print((char)val);
+  else if (port==4) data=val; 
+  else if (port==7)
+  {
+    noserial=val&1;  // set 1 to use serial port as I/O, else use as front panel
+  }
 }
 
 // Emulation engine
@@ -244,7 +256,7 @@ int run(void)
       else
       if (N==8) ;   // ?
       else if (N<8) output(N,d);
-      else d=input(N);
+      else d=input(N-8);  // port 1-7
 
     break;
     case 7:  // misc
