@@ -79,7 +79,7 @@ void setup () {
   Serial.println ("Wait");
   setupUno();
   reset();
-  Serial.print(F("1802UNOv1 freeMemory()=")); // just a little check, to avoid running out of RAM!
+  Serial.print(F("1802UNOv2 Free Memory=")); // just a little check, to avoid running out of RAM!
   Serial.println(freeRam());
 }
 
@@ -276,11 +276,8 @@ void scanKeys()
         {
           if ((millis()-timeFirstPressed)>1000) // more than 1000 ms
           {
-
-// originally you could hold a key down for a second and get some operation
-// I am not using that but left the skeletal part of the code here
-
-
+            if (keyCode==17) curkey='<';  // do not use curkey in if here since it gets reset
+            if (keyCode==20) curkey='>';
               timeFirstPressed=millis(); // because otherwise you toggle right back!
 
           }

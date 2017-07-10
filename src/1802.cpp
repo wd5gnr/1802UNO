@@ -2,6 +2,7 @@
 // Al Williams July 2017
 #include <Arduino.h>
 #include <stdint.h>
+#include <EEPROM.h>
 
 #include "1802.h"
 #include "main.h"
@@ -39,16 +40,19 @@ void reset()
   reg[0]=0;
   setaddress(0);
   setdata(0);
+  addstate=runstate=loadstate=0;
+  caddress=0;
 }
 
 // Do an execution cycle
 int exec1802(int ch)
 {
   int rv=1;
+
 // commands
 // Go = run
 // ST = Stop run or load
-// RS = Reset 
+// RS = Reset
 // AD = Copy extended data to load address
 // + - ef4
 // DA - ef1 (run) or single step (halt)
@@ -57,6 +61,23 @@ int exec1802(int ch)
 // otherwise we build up a hex number in data (which is 16-bits but only
 // the lower 8 bits show and are used in most cases)
 // Should we stop running?
+
+// meta keys (1 second press)
+  if (ch=='>')
+  {
+    int ptr;
+    reset();
+    for (ptr=0;ptr<(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) EEPROM.write(ptr,ram[ptr]);
+    return 0;
+  }
+  if (ch=='<')
+  {
+    int ptr;
+    for (ptr=0;ptr<(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) ram[ptr]=EEPROM.read(ptr);
+    reset();
+    return 0;
+  }
+// regular keys
   if (ch==KEY_ST && runstate==1) { runstate=0; caddress=reg[p]; }
   // Should we start running?
   if (ch==KEY_GO && runstate==0 && loadstate==0 && addstate==0) runstate=1;

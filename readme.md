@@ -21,6 +21,8 @@ The keyboard is mapped like this:
 * PC - Protect memory toggle so that load mode displays data
 * SST - Enter load mode
 * 0-F - Build up hex number. Accumulates 16-bits although you can only see the lower 8. For load mode, the lower 8 is used. For AD all 16-bits are used.
+* SST - Hold down for one second to save RAM to EEPROM
+* + - Hold down for one second when not running and not memory protected to read RAM from EEPROM
 
 Serial Port
 ===
@@ -33,6 +35,8 @@ On a terminal:
 * GO=^G 
 * PC=^P 
 * SST=[
+* SST (1 sec) <
+* Plus (1 sec) >
 
 That means that like KIM UNO, you don't need the hardware to run it (well, you do need the Arduino).
 
@@ -43,6 +47,21 @@ The far left decimal point is the Q LED.
 The next is lit for load state.
 The next is list for run state.
 The decimal point between the two digits of the data display indicate memory protect.
+
+Known Problems
+===
+The display of memory needs a little work. Select memory protect and then go to load mode, you'll see the byte at the current address. Pressing + will advance the address and show you the previous byte (so you see the first byte twice). THis will get fixed, but for now, you can just get used to it
+
+There is no telling how many instruction miscodings I've made.
+
+
+Future Plans
+===
+Would be nice to have a way to read/write files to the serial terminal, if present.
+
+Would like to make an I/O port that sends data to/from the serial port, too.
+
+Would like to have an I/O port to control the address display use and a way to set the address display.
 
 Hackaday
 ===
