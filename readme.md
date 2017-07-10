@@ -16,7 +16,7 @@ The keyboard is mapped like this:
 * ST - Stop running or stop load mode
 * RS - Reset
 * AD - Copy extended data register to load address
-* + - EF4 (Input key for program or load mode enter)
+* Plus - EF4 (Input key for program or load mode enter)
 * DA - While running, EF1, while idle, single step
 * PC - Protect memory toggle so that load mode displays data
 * SST - Enter load mode
