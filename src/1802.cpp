@@ -48,7 +48,7 @@ int exec1802(int ch)
 // commands
 // Go = run
 // ST = Stop run or load
-// RS = Reset or stop loading
+// RS = Reset 
 // AD = Copy extended data to load address
 // + - ef4
 // DA - ef1 (run) or single step (halt)
