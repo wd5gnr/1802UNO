@@ -48,3 +48,6 @@ Hackaday
 ===
 Yes, there will be a Hackaday post about this.
 
+Building
+===
+I used Platform.io to build. You may need to adjust the .ini file to suit.
