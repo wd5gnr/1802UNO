@@ -47,7 +47,7 @@ Other Serial Commands
 * semicolon - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution
 * asterisk - Dump registers and state
 * ? - Dump 1K of RAM in 1802UNO Format (see below)
-* @ - Load RAM in 1802UNO Format (see below and examples directory)
+* @ - Load RAM in 1802UNO Format (see below and examples directory; also see binto1802.c)
 
 Using the Serial Port from an 1802 Program
 ===
@@ -100,3 +100,11 @@ Yes, there will be a Hackaday post about this.
 Building
 ===
 I used Platform.io to build. You may need to adjust the .ini file to suit.
+
+Tool
+===
+The file binto1802 will convert a binary file into a loadable file at address 0. Of course, you can edit the file and change this address. You can compile this tool with:
+
+gcc -o binto1802 binto1802.c
+
+If you have an Intel hex file or other format, you can convert it to binary with srec_cat.
