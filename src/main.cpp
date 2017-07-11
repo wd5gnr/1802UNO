@@ -79,7 +79,7 @@ void setup () {
   Serial.println ("Wait");
   setupUno();
   reset();
-  Serial.print(F("1802UNOv5 Free Memory=")); // just a little check, to avoid running out of RAM!
+  Serial.print(F("1802UNOv6 Free Memory=")); // just a little check, to avoid running out of RAM!
   Serial.println(freeRam());
 }
 
@@ -235,6 +235,7 @@ uint8_t parseChar(uint8_t n) //  parse keycode to return its ASCII code
 uint8_t xkeyPressed()    // just see if there's any keypress waiting
 { return (curkey==0?0:1); }
 
+extern uint8_t ef4;
 
 // Scan keyboard (modfied a bit)
 void scanKeys()
@@ -263,6 +264,7 @@ void scanKeys()
     for (col=0;col<8;col++)
     { if (digitalRead(aCols[col])==LOW)  // key is pressed
       { keyCode = col+row*8+1;
+        if (keyCode==20) ef4=1; ef4=0;   // Set EF4 as long as + held down
         if (keyCode!=prevKey)
         {   //Serial.println();
             //Serial.print(" col: ");  Serial.print(col, DEC);
@@ -279,7 +281,7 @@ void scanKeys()
           if ((millis()-timeFirstPressed)>1000) // more than 1000 ms
           {
             if (keyCode==17) curkey='<';  // do not use curkey in if here since it gets reset
-            if (keyCode==20) curkey='>';
+            if (keyCode==22) curkey='>';
             if (keyCode==21) curkey=KEY_DA;  // repeat DA key for single step
               timeFirstPressed=millis(); // because otherwise you toggle right back!
 

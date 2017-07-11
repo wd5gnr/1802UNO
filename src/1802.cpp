@@ -85,7 +85,7 @@ int exec1802(int ch)
     reset();
     return 0;
   }
-  if (ch=='@')
+  if (ch=='@')  // load memory from serial
   {
     uint16_t ptr=0;
     uint8_t val=0;
@@ -123,7 +123,7 @@ int exec1802(int ch)
    }
    return 1;
   }
-  if (ch=='?')
+  if (ch=='?')  // dump memory to serial
   {
     uint16_t ptr;
     int group=0;
@@ -142,7 +142,21 @@ int exec1802(int ch)
     Serial.print(".\n");
     return 1;
     }
-    if (ch==';') tracemode^=1;
+    if (ch==';') tracemode^=1;   // trace toggle
+    if (ch=='*')    // dump processor state
+    {
+      int j;
+      for (j=0;j<16;j++)
+      {
+        Serial.print(j,HEX); Serial.print(':'); Serial.println(reg[j],HEX);
+      }
+      Serial.print("DR:"); Serial.println(d,HEX);
+      Serial.print("DF:"); Serial.println(df);
+      Serial.print("X:"); Serial.println(x);
+      Serial.print("P:"); Serial.println(p);
+      Serial.print("Q:"); Serial.println(q);
+      return 1;
+    }
 // regular keys
   if (ch==KEY_ST && runstate==1) { runstate=0; caddress=reg[p]; }
   // Should we start running?
@@ -156,7 +170,7 @@ int exec1802(int ch)
   // Load extended data register into caddress
   if (ch==KEY_AD && runstate==0 && loadstate==0 && addstate==0) addstate=1;
   // EF4 push
-  if (ch=='+') ef4=1; else ef4=0;
+//  if (ch=='+') ef4=1; else ef4=0;   // EF4 now set in keyboard routine
   // EF1 push
   if (ch==KEY_DA && runstate==1) ef1=1; else ef1='0';
   if (ch==KEY_DA && runstate==0)

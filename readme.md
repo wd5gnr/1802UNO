@@ -1,4 +1,4 @@
-1802 UNO v5
+1802 UNO v6
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -22,12 +22,12 @@ The keyboard is mapped like this:
 * SST - Enter load mode
 * 0-F - Build up hex number. Accumulates 16-bits although you can only see the lower 8. For load mode, the lower 8 is used. For AD all 16-bits are used.
 * SST - Hold down for one second to save RAM to EEPROM
-* Plus - Hold down for one second when not running and not memory protected to read RAM from EEPROM
-* ; - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution
+* AD - Hold down for one second when not running and not memory protected to read RAM from EEPROM
+
 
 Serial Port
 ===
-On a terminal (9600 8 N 1):
+On a terminal (9600 8 N 1) you can use normal keys like 0-9 A-F a-f + and these additional keys:
 
 * ST=^N  
 * RS=^R 
@@ -37,10 +37,20 @@ On a terminal (9600 8 N 1):
 * PC=^P 
 * SST=[
 * SST (1 sec) <
-* Plus (1 sec) >
+* AD (1 sec) >
 
 That means that like KIM UNO, you don't need the hardware to run it (well, you do need the Arduino).
 
+Other Serial Commands
+===
+* pipe - Go into serial terminal mode (until power cycle)
+* semicolon - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution*
+* asterisk - Dump registers and state
+* ? - Dump 1K of RAM in 1802UNO Format (see below)
+* @ - Load RAM in 1802UNO Format (see below and examples directory)
+
+Using the Serial Port from an 1802 Program
+===
 In addition, you can write to the terminal from 1802 code at port 1. If you
 want to read from the terminal, you can enter a | character. Once you do,
 the terminal will not act as a front panel anymore.
