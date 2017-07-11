@@ -44,7 +44,7 @@ That means that like KIM UNO, you don't need the hardware to run it (well, you d
 Other Serial Commands
 ===
 * pipe - Go into serial terminal mode (until power cycle)
-* semicolon - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution*
+* semicolon - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution
 * asterisk - Dump registers and state
 * ? - Dump 1K of RAM in 1802UNO Format (see below)
 * @ - Load RAM in 1802UNO Format (see below and examples directory)
