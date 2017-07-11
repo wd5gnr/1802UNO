@@ -7,6 +7,14 @@
 #include "1802.h"
 #include "main.h"
 
+#define MAXMEM 0x3FF  // maximum memory address; important: only 1K of EEPROM to store stuff in
+#define LED_PORT 4     // port for DATA LED display
+#define SW_PORT 4      // Front panel switch port
+#define SER_INP 1     // UART input port
+#define SER_OUT 1     // UART output port
+#define CTL_PORT 7    // Control port
+
+
 // CPU states... run, load memory, or set address
 int runstate=0;
 int loadstate=0;
@@ -26,7 +34,6 @@ uint8_t ef1, ef2, ef3, ef4;
 uint8_t mp=0;  // memory protect
 
 // RAM
-#define MAXMEM 0x3FF
 uint8_t ram[MAXMEM+1]; 		// main 1KB RAM		 0x000-0x3FF
 
 // reset CPU
@@ -211,7 +218,7 @@ int exec1802(int ch)
 // except port 1 is serial input
 uint8_t input(uint8_t port)
 {
-  if (port==1)
+  if (port==SER_INP)
   {
     int rv=Serial.read();
     if (rv==-1) rv=0;
@@ -223,9 +230,9 @@ uint8_t input(uint8_t port)
 // Output to any port writes to the data display
 void output(uint8_t port, uint8_t val)
 {
-  if (port==1) Serial.print((char)val);
-  else if (port==4) data=val;
-  else if (port==7)
+  if (port==SER_OUT) Serial.print((char)val);
+  else if (port==LED_PORT) data=val;
+  else if (port==CTL_PORT)
   {
     noserial=val&1;  // set 1 to use serial port as I/O, else use as front panel
   }
