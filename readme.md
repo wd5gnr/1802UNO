@@ -1,4 +1,4 @@
-1802 UNO v4
+1802 UNO v5
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -23,6 +23,7 @@ The keyboard is mapped like this:
 * 0-F - Build up hex number. Accumulates 16-bits although you can only see the lower 8. For load mode, the lower 8 is used. For AD all 16-bits are used.
 * SST - Hold down for one second to save RAM to EEPROM
 * Plus - Hold down for one second when not running and not memory protected to read RAM from EEPROM
+* ; - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution
 
 Serial Port
 ===

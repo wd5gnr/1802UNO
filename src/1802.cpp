@@ -19,6 +19,7 @@
 int runstate=0;
 int loadstate=0;
 int addstate=0; // this is bogus but handy
+int tracemode=0;
 
 unsigned int caddress;  // current load address
 unsigned int data;      // data
@@ -141,6 +142,7 @@ int exec1802(int ch)
     Serial.print(".\n");
     return 1;
     }
+    if (ch==';') tracemode^=1;
 // regular keys
   if (ch==KEY_ST && runstate==1) { runstate=0; caddress=reg[p]; }
   // Should we start running?
@@ -241,10 +243,18 @@ void output(uint8_t port, uint8_t val)
 // Emulation engine
 int run(void)
 {
-  uint8_t inst=ram[reg[p]];
+  uint8_t inst=ram[reg[p]&MAXMEM];
   reg[p]++;
   I=inst>>4;
   N=inst&0xF;
+  if (tracemode)
+  {
+    Serial.print(reg[p]-1,HEX);
+    Serial.print(':');
+    Serial.print(inst,HEX);
+    Serial.print(' ');
+    Serial.println(d,HEX);
+  }
   if (inst==0)  // op code 00 causes simulation to stop
   { // IDL
     return 0;
