@@ -16,7 +16,7 @@
 
 // How many cycles between display refreshes?
 // Higher makes the simulation faster, but the screen more blinky
-#define DISPLAY_DIVSOR 16  // number of ticks between display refresh
+#define DISPLAY_DIVSOR 32  // number of ticks between display refresh
 #define SERIAL_ESCAPE '|'  // turn terminal input into real terminal input
 
 
@@ -95,7 +95,7 @@ void loop()
    else exec1802(curkey);
    curkey=0;
   }
-  scanKeys();   // scan the keyboard
+  if (tick%DISPLAY_DIVSOR==0) scanKeys();   // scan the keyboard
   exec1802(curkey);   // process even if 0
   curkey=0;         // clear out keyboard
 // Update display only so often
@@ -280,6 +280,7 @@ void scanKeys()
           {
             if (keyCode==17) curkey='<';  // do not use curkey in if here since it gets reset
             if (keyCode==20) curkey='>';
+            if (keyCode==21) curkey=KEY_DA;  // repeat DA key for single step
               timeFirstPressed=millis(); // because otherwise you toggle right back!
 
           }

@@ -451,6 +451,9 @@ int run(void)
       case 0xD:
       if (q==(N==0xD)) reg[p]+=2;
       break;
+      case 0xE:
+      if (d==0) reg[p]+=2;
+      break;
       case 6:
       if (d!=0) reg[p]+=2;
       break;
