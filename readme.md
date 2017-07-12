@@ -58,11 +58,7 @@ the terminal will not act as a front panel anymore.
 The 1802 code can control that mode by writing a 1 to port 7 to disable the
 serial front panel. A zero will reenable it.
 
-Here's a simple terminal program:
-
-0000: 69 32 00 64 30 00
-
-Remember to turn the terminal front panel off with | before you try this.
+There is a simple terminal program in the examples directory called Echo.txt. Remember to turn the terminal front panel off with | before you try this.
 
 Loading and Saving RAM
 ===
