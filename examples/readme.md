@@ -16,7 +16,7 @@ can't upload over the serial port (until you power off/on).
 
 * Hello.txt - Say Hello!
 
-* dice.txt - From QuestData. Press Go to roll dice and stop to see the value. NOTE: this works because P=0 and X=0 at reboot! So 64 is an immediate output command since OUT readm M[R[X]] and does R[X]++. How cool!
+* dice.txt - From QuestData. Press Go to roll dice and stop to see the value. NOTE: this works because P=0 and X=0 at reboot! So 64 is an immediate output command when X==P==0 since OUT reads M[R[X]] and does R[X]++. How cool!
 
 * bcd.txt - My first program published in QuestData! You do your decimal data entry (00-99) and press GO to see the result. You should be able to press INPUT to do another but the way we don't properly handle data entry while the program is running is preventing that from working. So just stop the processor, enter your data, and either reset/go or go/press input to continue. An easy fix is in bcd1.txt but I wanted the original and I will eventually fix the data entry issue.
 
