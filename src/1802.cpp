@@ -105,10 +105,11 @@ int exec1802(int ch)
        state=1;
      }
     }
-    while (state==1)
+    while (state==1||state==4)
    {
     int c;
     while ((c=Serial.read())==-1);
+    if (state==4 && (c<'0'&&c!='.')) continue; else state=1;  // skip multiple whitespace
     if ((c>='0'&&c<='9')||(c>='a'&&c<='f')||(c>='A'&&c<='F'))
     {
       val<<=4;
@@ -118,6 +119,7 @@ int exec1802(int ch)
     else if (c=='.') state=3; else
     {
       ram[ptr++]=val;
+      state=4;
       val=0;
     }
    }
