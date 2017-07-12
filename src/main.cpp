@@ -13,6 +13,7 @@
 #include "main.h"
 #include "1802.h"
 
+#define VERSION "1802UNOv6"
 
 // How many cycles between display refreshes?
 // Higher makes the simulation faster, but the screen more blinky
@@ -79,7 +80,7 @@ void setup () {
   Serial.println ("Wait");
   setupUno();
   reset();
-  Serial.print(F("1802UNOv6 Free Memory=")); // just a little check, to avoid running out of RAM!
+  Serial.print(F(VERSION " Free Memory=")); // just a little check, to avoid running out of RAM!
   Serial.println(freeRam());
 }
 

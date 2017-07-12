@@ -343,8 +343,16 @@ int run(void)
       if (N==0) reg[x]++;
       else
       if (N==8) ;   // ?
-      else if (N<8) output(N,d);
-      else d=input(N-8);  // port 1-7
+      else if (N<8)
+      {
+        output(N,ram[reg[x]&MAXMEM]);
+        reg[x]++;
+      }
+      else
+      {
+        d=input(N-8);  // port 1-7
+        ram[reg[x]&MAXMEM]=d;
+      }
 
     break;
     case 7:  // misc

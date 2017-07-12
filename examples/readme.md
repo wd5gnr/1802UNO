@@ -16,4 +16,4 @@ Echo.txt - Once you turn the serial terminal to ASCII (|) you can press a key to
 
 Hello.txt - Say Hello!
 
-
+dice.txt - From quest data. Press Go to roll dice and stop to see the value. NOTE: this works because P=0 and X=0 at reboot! So 64 is an immediate output command since OUT readm M[R[X]] and does R[X]++. How cool!
