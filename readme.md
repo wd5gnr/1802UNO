@@ -80,27 +80,27 @@ The decimal point between the two digits of the data display indicate memory pro
 
 Known Problems
 ===
-The display of memory needs a little work. Select memory protect and then go to load mode, you'll see the byte at the current address. Pressing + will advance the address and show you the previous byte (so you see the first byte twice). THis will get fixed, but for now, you can just get used to it
+* The display of memory needs a little work. Select memory protect and then go to load mode, you'll see the byte at the current address. Pressing + will advance the address and show you the previous byte (so you see the first byte twice). THis will get fixed, but for now, you can just get used to it
 
-There is no telling how many instruction miscodings I've made. Of course, that's not technically a "known" problem.
+* There is no telling how many instruction miscodings I've made. Of course, that's not technically a "known" problem.
 
-Memory protect only works during load, not during run (fixable)
+* Memory protect only works during load, not during run (fixable)
 
-There is a problem where trying to read the input data from the keyboard
+* There is a problem where trying to read the input data from the keyboard
 while running fails.
 
-There is a problem where after loading from EEPROM you have to press Go twice.
+* There is a problem where after loading from EEPROM you have to press Go twice.
 
-Some of the front panel semantics needs tweaking. For example, pressing Go after Stop, etc. This is sort of related to the memory display memory  issue mentioned earlier.
+Some of the front panel semantics needs tweaking. This is sort of related to the memory display memory issue mentioned earlier.
 
 
 Future Plans
 ===
-Would like to have an I/O port (7) to control the address display use and a way to set the address display.
+* Would like to have an I/O port (7) to control the address display use and a way to set the address display.
 
-Fix all the known problems. Nothing on that list is a big deal.
+* Fix all the known problems. Nothing on that list is a big deal.
 
-WARNING: I am going to swap  the SST and DA keys soon.
+WARNING: I am going to swap  the SST and DA keys soon. I may also change the terminal commands to non-control characters (e.g., g for go, etc.).
 
 Hackaday
 ===
@@ -114,6 +114,6 @@ Tool
 ===
 The file binto1802 will convert a binary file into a loadable file at address 0. Of course, you can edit the file and change this address. You can compile this tool with:
 
-gcc -o binto1802 binto1802.c
+     gcc -o binto1802 binto1802.c
 
 If you have an Intel hex file or other format, you can convert it to binary with srec_cat.
