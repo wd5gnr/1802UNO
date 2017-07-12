@@ -86,7 +86,7 @@ Known Problems
 ===
 The display of memory needs a little work. Select memory protect and then go to load mode, you'll see the byte at the current address. Pressing + will advance the address and show you the previous byte (so you see the first byte twice). THis will get fixed, but for now, you can just get used to it
 
-There is no telling how many instruction miscodings I've made.
+There is no telling how many instruction miscodings I've made. Of course, that's not technically a "known" problem.
 
 Memory protect only works during load, not during run (fixable)
 
@@ -95,9 +95,16 @@ while running fails.
 
 There is a problem where after loading from EEPROM you have to press Go twice.
 
+Some of the front panel semantics needs tweaking. For example, pressing Go after Stop, etc. This is sort of related to the memory display memory  issue mentioned earlier.
+
+
 Future Plans
 ===
 Would like to have an I/O port (7) to control the address display use and a way to set the address display.
+
+Fix all the known problems. Nothing on that list is a big deal.
+
+WARNING: I am going to swap  the SST and DA keys soon.
 
 Hackaday
 ===
