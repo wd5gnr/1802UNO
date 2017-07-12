@@ -265,7 +265,7 @@ void scanKeys()
     for (col=0;col<8;col++)
     { if (digitalRead(aCols[col])==LOW)  // key is pressed
       { keyCode = col+row*8+1;
-        if (keyCode==20) ef4=1; ef4=0;   // Set EF4 as long as + held down
+        if (keyCode==20) ef4=1; else ef4=0;   // Set EF4 as long as + held down
         if (keyCode!=prevKey)
         {   //Serial.println();
             //Serial.print(" col: ");  Serial.print(col, DEC);
@@ -295,6 +295,9 @@ void scanKeys()
     digitalWrite(aRows[row], HIGH);       // de-activate this row
   }
 
-  if (noKeysScanned==24)    // no keys detected in any row, 3 rows * 8 columns = 24. used to be 28.
+  if (noKeysScanned==24)
+    {   // no keys detected in any row, 3 rows * 8 columns = 24. used to be 28.
     prevKey=0;        // allows you to enter same key twice
+    ef4=0;
+    }
 } // end of function

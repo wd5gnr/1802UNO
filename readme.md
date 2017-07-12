@@ -88,6 +88,12 @@ The display of memory needs a little work. Select memory protect and then go to 
 
 There is no telling how many instruction miscodings I've made.
 
+Memory protect only works during load, not during run (fixable)
+
+There is a problem where trying to read the input data from the keyboard
+while running fails.
+
+There is a problem where after loading from EEPROM you have to press Go twice.
 
 Future Plans
 ===
