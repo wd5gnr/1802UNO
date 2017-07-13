@@ -63,9 +63,9 @@ int exec1802(int ch)
 // RS = Reset
 // AD = Copy extended data to load address
 // + - ef4
-// DA - ef1 (run) or single step (halt)
+// DA - load
 // PC - memory protect on
-// SST - load
+// SST - step
 // otherwise we build up a hex number in data (which is 16-bits but only
 // the lower 8 bits show and are used in most cases)
 // Should we stop running?
@@ -175,7 +175,6 @@ int exec1802(int ch)
   // EF4 push
 //  if (ch=='+') ef4=1; else ef4=0;   // EF4 now set in keyboard routine
   // EF1 push
-  if (ch==KEY_DA && runstate==1) ef1=1; else ef1='0';
   if (ch==KEY_SST && runstate==0)
   {
     data=ram[reg[p]&MAXMEM];
@@ -299,30 +298,30 @@ int run(void)
         break;
         case 1:
         case 9:
-        if (q!=(N&1)) nxt=tpc;
+        if (q!=((N&8)?1:0)) nxt=tpc;
         break;
         case 2:
         if (d==0) nxt=tpc;
         break;
         case 3:
         case 11:
-        if (df!=(N&1)) nxt=tpc;
+        if (df!=((N&8)?1:0)) nxt=tpc;
         break;
         case 4:
         case 12:
-        if (ef1!=(N&1)) nxt=tpc;
+        if (ef1!=((N&8)?1:0)) nxt=tpc;
         break;
         case 5:
         case 13:
-        if (ef2!=(N&1)) nxt=tpc;
+        if (ef2!=((N&8)?1:0)) nxt=tpc;
         break;
         case 6:
         case 14:
-        if (ef3!=(N&1)) nxt=tpc;
+        if (ef3!=((N&8)?1:0)) nxt=tpc;
         break;
         case 7:
         case 15:
-        if (ef4!=(N&1)) nxt=tpc;
+        if (ef4!=((N&8)?1:0)) nxt=tpc;
         break;
         case 8:
         break;  //does this skip? I don't think so

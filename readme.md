@@ -17,7 +17,7 @@ The keyboard is mapped like this:
 * RS - Reset
 * AD - Copy extended data register to load address
 * Plus - EF4 (Input key for program or load mode enter)
-* DA - While running, EF1, while idle, enter load mode
+* DA - While idle, enter load mode
 * PC - Protect memory toggle so that load mode displays data
 * SST - Single step
 * 0-F - Build up hex number. Accumulates 16-bits although you can only see the lower 8. For load mode, the lower 8 is used. For AD all 16-bits are used.
@@ -82,17 +82,10 @@ Known Problems
 ===
 * There is no telling how many instruction miscodings I've made. Of course, that's not technically a "known" problem.
 
-* There is a problem where trying to read the input data from the keyboard
-while running fails or else there is a problem with bcd.txt or an opcode that it uses.
-
 
 Future Plans
 ===
 * Would like to have an I/O port (7) to control the address display use and a way to set the address display.
-
-* Fix all the known problems. Nothing on that list is a big deal.
-
-WARNING: I am going to swap  the SST and DA keys soon. I may also change the terminal commands to non-control characters (e.g., g for go, etc.).
 
 Hackaday
 ===
