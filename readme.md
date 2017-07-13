@@ -86,6 +86,7 @@ Known Problems
 Future Plans
 ===
 * Would like to have an I/O port (7) to control the address display use and a way to set the address display.
+* Likely to add the option to load/save Intel hex files.
 
 Hackaday
 ===
