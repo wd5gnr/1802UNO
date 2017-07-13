@@ -17,9 +17,9 @@ The keyboard is mapped like this:
 * RS - Reset
 * AD - Copy extended data register to load address
 * Plus - EF4 (Input key for program or load mode enter)
-* DA - While running, EF1, while idle, single step
+* DA - While running, EF1, while idle, enter load mode
 * PC - Protect memory toggle so that load mode displays data
-* SST - Enter load mode
+* SST - Single step
 * 0-F - Build up hex number. Accumulates 16-bits although you can only see the lower 8. For load mode, the lower 8 is used. For AD all 16-bits are used.
 * SST - Hold down for one second to save RAM to EEPROM
 * AD - Hold down for one second when not running and not memory protected to read RAM from EEPROM
@@ -29,14 +29,14 @@ Serial Port
 ===
 On a terminal (9600 8 N 1) you can use normal keys like 0-9 A-F a-f + and these additional keys:
 
-* ST=^N  
-* RS=^R 
-* AD=^A 
-* DA=^D 
-* GO=^G 
-* PC=^P 
-* SST=[
-* SST (1 sec) <
+* ST=S
+* RS=R
+* AD=Equal sign
+* DA=L
+* GO=G
+* PC=P
+* SST=/
+* DA (1 sec) <
 * AD (1 sec) >
 
 That means that like KIM UNO, you don't need the hardware to run it (well, you do need the Arduino).
@@ -80,18 +80,10 @@ The decimal point between the two digits of the data display indicate memory pro
 
 Known Problems
 ===
-* The display of memory needs a little work. Select memory protect and then go to load mode, you'll see the byte at the current address. Pressing + will advance the address and show you the previous byte (so you see the first byte twice). THis will get fixed, but for now, you can just get used to it
-
 * There is no telling how many instruction miscodings I've made. Of course, that's not technically a "known" problem.
 
-* Memory protect only works during load, not during run (fixable)
-
 * There is a problem where trying to read the input data from the keyboard
-while running fails.
-
-* There is a problem where after loading from EEPROM you have to press Go twice.
-
-Some of the front panel semantics needs tweaking. This is sort of related to the memory display memory issue mentioned earlier.
+while running fails or else there is a problem with bcd.txt or an opcode that it uses.
 
 
 Future Plans

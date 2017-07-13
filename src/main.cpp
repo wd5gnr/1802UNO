@@ -226,7 +226,7 @@ uint8_t parseChar(uint8_t n) //  parse keycode to return its ASCII code
     case	19	: c = 	'+'; break;     // +
     case	18	: c = 	KEY_GO;   break;	// GO
     case	17	: c =   KEY_PC;  break;	// PC
-    case	16	: c =   '[';  break; // 	SST toggle
+    case	16	: c =   KEY_SST;  break; // 	SST toggle
   }
   return c;
 }
@@ -281,9 +281,9 @@ void scanKeys()
         {
           if ((millis()-timeFirstPressed)>1000) // more than 1000 ms
           {
-            if (keyCode==17) curkey='<';  // do not use curkey in if here since it gets reset
+            if (keyCode==21) curkey='<';  // do not use curkey in if here since it gets reset
             if (keyCode==22) curkey='>';
-            if (keyCode==21) curkey=KEY_DA;  // repeat DA key for single step
+            if (keyCode==17) curkey=KEY_SST;  // repeat SST key for single step
               timeFirstPressed=millis(); // because otherwise you toggle right back!
 
           }

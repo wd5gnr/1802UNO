@@ -69,6 +69,7 @@ int exec1802(int ch)
 // otherwise we build up a hex number in data (which is 16-bits but only
 // the lower 8 bits show and are used in most cases)
 // Should we stop running?
+  ch=ch>='a'&&ch<='z'?ch&0xDF:ch;  // convert to upper case
 
 // meta keys (1 second press)
   if (ch=='>')  // save 1K to EEPROM
@@ -85,7 +86,7 @@ int exec1802(int ch)
     reset();
     return 0;
   }
-  if (ch=='@')  // load memory from serial
+  if (ch=='@' && mp==0)  // load memory from serial
   {
     uint16_t ptr=0;
     uint8_t val=0;
@@ -160,13 +161,13 @@ int exec1802(int ch)
       return 1;
     }
 // regular keys
-  if (ch==KEY_ST && runstate==1) { runstate=0; caddress=reg[p]; }
+  if (ch==KEY_ST && runstate==1) { runstate=0; caddress=reg[p]; }  // stop
   // Should we start running?
   if (ch==KEY_GO && runstate==0 && loadstate==0 && addstate==0) runstate=1;
-// Should we go to load state (preload data display in case MP is on)
-  if (ch=='[' && runstate==0 && loadstate==0 && addstate==0) { loadstate=1; data=ram[caddress&MAXMEM]; }
+// Should we go to load state
+  if (ch==KEY_DA && runstate==0 && loadstate==0 && addstate==0) { loadstate=1;  data=ram[caddress&MAXMEM]; }
   // reset?
-  if (ch==KEY_RS && loadstate==0) { reset(); runstate=0; addstate=0; }
+  if (ch==KEY_RS) { reset(); runstate=0; addstate=0;  loadstate=0;}
   // Stop load state
   if (ch==KEY_ST && loadstate==1) loadstate=0;
   // Load extended data register into caddress
@@ -175,7 +176,7 @@ int exec1802(int ch)
 //  if (ch=='+') ef4=1; else ef4=0;   // EF4 now set in keyboard routine
   // EF1 push
   if (ch==KEY_DA && runstate==1) ef1=1; else ef1='0';
-  if (ch==KEY_DA && runstate==0)
+  if (ch==KEY_SST && runstate==0)
   {
     data=ram[reg[p]&MAXMEM];
     setaddress(reg[p]);
@@ -203,9 +204,9 @@ int exec1802(int ch)
 
   // Ok now we can see what state we are in
   // if loading (or displaying if mp==1)
-  if (loadstate==1 && ef4==1)  {  if (mp) data=ram[caddress&MAXMEM]; else ram[caddress&MAXMEM]=data; caddress++; loadstate=2;  }
+  if (loadstate==1 && ef4==1)  {  if (mp) data=ram[caddress&MAXMEM]; else ram[caddress&MAXMEM]=data;  loadstate=2;  }
   // state 2 waits for EF4 release
-  if (loadstate==2 && ef4==0) { loadstate=1; }
+  if (loadstate==2 && ef4==0) { loadstate=1; caddress++; data=ram[caddress&MAXMEM]; }
   // run if required
   if (runstate==1) rv=run();
   // copy address if required
@@ -338,7 +339,7 @@ int run(void)
     reg[inst&0x0f]++;
     break;
     case 5:
-    ram[reg[N]&MAXMEM]=d;
+    if (mp==0) ram[reg[N]&MAXMEM]=d;
     break;
     case 6:
     // IRX + I/O
@@ -353,7 +354,7 @@ int run(void)
       else
       {
         d=input(N-8);  // port 1-7
-        ram[reg[x]&MAXMEM]=d;
+        if (mp==0) ram[reg[x]&MAXMEM]=d;
       }
 
     break;
@@ -372,7 +373,7 @@ int run(void)
       reg[x]++;
       break;
       case 3:
-      ram[reg[x]&MAXMEM]=d;
+      if (mp==0) ram[reg[x]&MAXMEM]=d;
       reg[x]--;
       break;
       case 4:
@@ -399,11 +400,11 @@ int run(void)
       break;
       case 8:
       // we aren't doing interrupts, so T is never set except by SAV
-      ram[reg[x]&MAXMEM]=t;
+      if (mp==0) ram[reg[x]&MAXMEM]=t;
       break;
       case 9:
       t=x<<4|p;
-      ram[reg[2]&MAXMEM]=t;
+      if (mp==0) ram[reg[2]&MAXMEM]=t;
       x=p;
       reg[2]--;
       break;
