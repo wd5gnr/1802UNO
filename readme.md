@@ -103,3 +103,15 @@ The file binto1802 will convert a binary file into a loadable file at address 0.
      gcc -o binto1802 binto1802.c
 
 If you have an Intel hex file or other format, you can convert it to binary with srec_cat.
+
+A Note About Compatiblity
+===
+There is quite a bit of software out there for the 1802 that uses a terminal
+such as monitors, Basic, Forth, etc. In many cases, these programs expect
+to drive their own serial port via the Q and EF ports. This approach won't
+work with the simulator. I may try to port or recreate parts of Riley's BIOS althoug it will require being "ROMed" as the simulator only has 1K of RAM.
+
+Of course, if you have the source to a program you can change it to use the serial ports (very easy to read and write serial compared to bit-banging).
+
+
+
