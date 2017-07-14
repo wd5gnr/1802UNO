@@ -68,7 +68,7 @@ int ihexout::write(uint8_t *bytes, uint16_t count, uint16_t base)
   safe_putch('1');  
   safe_putch('F');
   safe_putch('F');
-  if (crlf()) return -1;
+  return crlf();
 }
 
 
