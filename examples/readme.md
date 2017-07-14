@@ -22,4 +22,6 @@ can't upload over the serial port (until you power off/on).
 
 * bcd.txt - My first program published in QuestData! You do your decimal data entry (00-99) and press GO to see the result. Now you can enter a new value and press enter. The logic, by the way, is 2*(M/4+M/16)+L. Note that this is the same as 2*(5*M/16)+L or 10*M/16+L. Where M=the top digit unshifted and L is the bottom digit. So for number 92, M=90 and L=2 (hex). Remember 16 is 10 hex so in hex you get 0A*90/10+2.
 
+* bcd.hex - Same as above in Intel hex file format.
+
 * bcd1.txt - Same as above but uses IDL to stop the processor while waiting for input. Press run to continue.

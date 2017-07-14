@@ -127,6 +127,14 @@ int exec1802(int ch)
    }
    return 1;
   }
+  if (ch=='Y' || ch=='y') // write intel hex
+    {
+      ihexo1802 writer;
+      Serial.println("");
+      writer.write(ram,MAXMEM);
+      return 1;
+    }
+
   if (ch=='X' || ch=='x')  // read intel hex
     {
       ihex1802 reader;
@@ -609,4 +617,10 @@ int ihex1802::getch(void)
 void ihex1802::setmem(uint16_t a, uint8_t d)
 {
   ram[a&MAXMEM]=d;
+}
+
+int ihexo1802::putch(int c)
+{
+  Serial.print((char)c);
+  return 0;
 }
