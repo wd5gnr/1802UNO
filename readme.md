@@ -1,4 +1,4 @@
-1802 UNO v10
+1802 UNO v11
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -90,11 +90,20 @@ Known Problems
 
 Future Plans
 ===
-* Would like to have an I/O port (7) to control the address display use and a way to set the address display.
+* All done for now
 
 Hackaday
 ===
 Yes, there will be a Hackaday post about this.
+
+Port Summary
+===
+* Port 1 - Serial port
+* Port 2 - LSD of address display (if enabled)
+* POrt 3 - MSD of address display (if enabled)
+* Port 4 - Switch/Data LED
+* Port 7 - Control port. Set bit 0 to disable serial front panel. Set bit 1 to put address displays under program control (see port 2,3).
+
 
 Building
 ===

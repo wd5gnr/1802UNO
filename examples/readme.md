@@ -25,3 +25,5 @@ can't upload over the serial port (until you power off/on).
 * bcd.hex - Same as above in Intel hex file format.
 
 * bcd1.txt - Same as above but uses IDL to stop the processor while waiting for input. Press run to continue.
+
+* disp.hex - Displays AA5591 on the address and data displays

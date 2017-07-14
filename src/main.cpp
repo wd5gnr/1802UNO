@@ -13,7 +13,7 @@
 #include "main.h"
 #include "1802.h"
 
-#define VERSION "1802UNOv10"
+#define VERSION "1802UNOv11"
 
 // How many cycles between display refreshes?
 // Higher makes the simulation faster, but the screen more blinky

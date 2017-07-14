@@ -14,13 +14,19 @@
 #define SER_INP 1     // UART input port
 #define SER_OUT 1     // UART output port
 #define CTL_PORT 7    // Control port
-
+#define A0_PORT 2     // LSD address display output port
+#define A1_PORT 3     // MSD address display output port
 
 // CPU states... run, load memory, or set address
 int runstate=0;
 int loadstate=0;
 int addstate=0; // this is bogus but handy
 int tracemode=0;
+int addisp=0;
+uint8_t adhigh=0;  // high address display for I/O
+uint8_t adlow=0;  // low address display for I/O
+
+
 
 unsigned int caddress;  // current load address
 unsigned int data;      // data
@@ -51,6 +57,7 @@ void reset()
   setdata(0);
   addstate=runstate=loadstate=0;
   caddress=0;
+  addisp=0;
 }
 
 // Do an execution cycle
@@ -193,7 +200,7 @@ int exec1802(int ch)
   if (ch==KEY_SST && runstate==0)
   {
     data=ram[reg[p]&MAXMEM];
-    setaddress(reg[p]);
+    setaddress(reg[p]);  // we don't care if the program is using address display here
     run();
     runstate=2;
   }
@@ -224,7 +231,7 @@ int exec1802(int ch)
   // run if required
   if (runstate==1) rv=run();
   // copy address if required
-  if (addstate) { caddress=data; addstate=0; setaddress(caddress); }
+  if (addstate) { caddress=data; addstate=0; setaddress(caddress); }  // don't care about address display setting here
   // stop running if there was an error
   if (rv<=0 && runstate==1)
   {
@@ -233,7 +240,14 @@ int exec1802(int ch)
   }
 
 // address should show load address or execution address
-  if (runstate) setaddress(reg[p]);
+  if (runstate)
+    {
+      if (addisp)
+	setaddress(adhigh<<8|adlow);
+      else
+	setaddress(reg[p]);
+    }
+
   if (loadstate) setaddress(caddress);
   // set up data display
   setdata(data);
@@ -265,9 +279,12 @@ void output(uint8_t port, uint8_t val)
 {
   if (port==SER_OUT) Serial.print((char)val);
   else if (port==LED_PORT) data=val;
+  else if (port==A0_PORT) adlow=val;
+  else if (port==A1_PORT) adhigh=val;
   else if (port==CTL_PORT)
   {
     noserial=val&1;  // set 1 to use serial port as I/O, else use as front panel
+    addisp=(val&2)==2; // set bit 1 to 1 to use address displays
   }
 }
 
