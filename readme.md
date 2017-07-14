@@ -1,4 +1,4 @@
-1802 UNO v8
+1802 UNO v9
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -48,6 +48,7 @@ Other Serial Commands
 * asterisk - Dump registers and state
 * ? - Dump 1K of RAM in 1802UNO Format (see below)
 * @ - Load RAM in 1802UNO Format (see below and examples directory; also see binto1802.c)
+* X - Load RAM from Intel hex file
 
 Using the Serial Port from an 1802 Program
 ===
@@ -86,7 +87,6 @@ Known Problems
 Future Plans
 ===
 * Would like to have an I/O port (7) to control the address display use and a way to set the address display.
-* Likely to add the option to load/save Intel hex files.
 
 Hackaday
 ===

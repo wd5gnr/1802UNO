@@ -6,6 +6,7 @@
 
 #include "1802.h"
 #include "main.h"
+#include "ihex1802.h"
 
 #define MAXMEM 0x3FF  // maximum memory address; important: only 1K of EEPROM to store stuff in
 #define LED_PORT 4     // port for DATA LED display
@@ -126,6 +127,12 @@ int exec1802(int ch)
    }
    return 1;
   }
+  if (ch=='X' || ch=='x')  // read intel hex
+    {
+      ihex1802 reader;
+      reader.read();
+      return 1;
+    }
   if (ch=='?')  // dump memory to serial
   {
     uint16_t ptr;
@@ -587,4 +594,19 @@ int run(void)
 
   }
 return 1;
+}
+
+
+// Intel hex stuff
+
+int ihex1802::getch(void)
+{
+  int c;
+  while ((c=Serial.read())==-1);
+  return c;
+}
+
+void ihex1802::setmem(uint16_t a, uint8_t d)
+{
+  ram[a&MAXMEM]=d;
 }

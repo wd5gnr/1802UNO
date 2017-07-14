@@ -10,6 +10,8 @@ can't upload over the serial port (until you power off/on).
 
 * QBlink.txt - Blink the Q LED fast
 
+* blink.hex - Same thing in Intel hex format (use X command to load)
+
 * QBlinker.txt - Blink the LED slower
 
 * Echo.txt - Once you turn the serial terminal to ASCII (|) you can press a key to see its hex value on the LEDs. Note: this assumes you have not remapped the ports (port 1 is the terminal and port 4 is the LEDs).
