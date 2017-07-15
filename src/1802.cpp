@@ -31,6 +31,7 @@ uint8_t adlow=0;  // low address display for I/O
 
 unsigned int caddress;  // current load address
 unsigned int data;      // data
+unsigned int idata;
 
 int noserial=0;
 
@@ -45,12 +46,57 @@ uint8_t mp=0;  // memory protect
 // RAM
 uint8_t ram[MAXMEM+1]; 		// main 1KB RAM		 0x000-0x3FF
 // ROM
+// ETOPS
 const uint8_t PROGMEM rom[]=
   {
-    0x7A,
-    0x7B,
-    0x30,
-    0x00    // assumes rombase is XX00
+    0x30, 0X3B,
+    0xf8, 0XFF,
+    0xa2,
+    0xe2,
+    0x90,
+    0xb3,
+    0xf8, 0x0c,
+    0xa3,
+    0xd3,
+    0x6c,
+    0x64,
+    0x22,
+    0xa1,
+    0x3f, 0x10,
+    0x37, 0x12,
+    0x6c,
+    0x64,
+    0x22,
+    0xb0,
+    0x3f, 0x18,
+    0x37, 0x1a,
+    0x6c,
+    0x64,
+    0x22,
+    0xa0,
+    0x81,
+    0x3a, 0x24,
+    0xd0,
+    0xff, 0x01,
+    0x32, 0x29,
+    0x7b,
+    0x3f, 0x29,
+    0x80,
+    0x52,
+    0x64,
+    0x22,
+    0x37, 0x2f,
+    0x39, 0x35,
+    0x6c,
+    0x50,
+    0x40,
+    0x52,
+    0x64,
+    0x22,
+    0x30, 0x29,
+    0xF8, 0x03,
+    0xb2,
+    0x30, 0x02
   };
 
 uint16_t rombase=0x8000;
@@ -217,6 +263,7 @@ int exec1802(int ch)
   if (ch==KEY_AD && runstate==0 && loadstate==0 && addstate==0) addstate=1;
   // EF4 push
 //  if (ch=='+') ef4=1; else ef4=0;   // EF4 now set in keyboard routine
+   if (ch=='$') ef4=ef4?0:1;
   // EF1 push
   if (ch==KEY_SST && runstate==0)
   {
@@ -239,10 +286,10 @@ int exec1802(int ch)
 
 
 // build up hex number
-  if (ch>='0' && ch<='9') data=data<<4|(ch-'0');
-  if (ch>='A' && ch<='F') data=data<<4|(ch-'A'+10);
+  if (ch>='0' && ch<='9') {idata=idata<<4|(ch-'0'); data=idata; }
+  if (ch>='A' && ch<='F') {idata=idata<<4|(ch-'A'+10); data=idata; }
   // in case of serial input
-  if (ch>='a' && ch<='f') data=data<<4|(ch-'a'+10);
+  if (ch>='a' && ch<='f') {idata=idata<<4|(ch-'a'+10); data=idata; }
 
   // Ok now we can see what state we are in
   // if loading (or displaying if mp==1)
@@ -250,7 +297,7 @@ int exec1802(int ch)
   // state 2 waits for EF4 release
   if (loadstate==2 && ef4==0) { loadstate=1; data=memread(++caddress); }
   // run if required
-  if (runstate==1) rv=run();
+  if (runstate==1) { rv=run(); }
   // copy address if required
   if (addstate) { caddress=data; addstate=0; setaddress(caddress); addstate=0; }  // don't care about address display setting here
   // stop running if there was an error
@@ -263,10 +310,8 @@ int exec1802(int ch)
 // address should show load address or execution address
   if (runstate)
     {
-      if (addisp)
-	setaddress(adhigh<<8|adlow);
-      else
-	setaddress(reg[p]);
+      if (addisp) setaddress(adhigh<<8|adlow);
+      else setaddress(reg[p]);
     }
 
   if (loadstate) setaddress(caddress);
@@ -292,7 +337,7 @@ uint8_t input(uint8_t port)
     if (rv==-1) rv=0;
     return rv;
   }
-  return data;
+  return idata;
 }
 
 // Output to any port writes to the data display
@@ -312,7 +357,16 @@ void output(uint8_t port, uint8_t val)
 // Emulation engine
 int run(void)
 {
-  uint8_t inst=memread(reg[p]);
+uint8_t inst=memread(reg[p]);
+#if 0
+  if (reg[p]&0xFF00==0xFF00)
+  {
+  Serial.print("BIOS: ");
+  Serial.println(memread(reg[p]),HEX);
+  inst=0;
+  }
+
+#endif
   reg[p]++;
   I=inst>>4;
   N=inst&0xF;
@@ -379,7 +433,7 @@ int run(void)
         case 8:
         break;  //does this skip? I don't think so
         case 10:
-        if (!d) nxt=tpc;
+        if (d!=0) nxt=tpc;
         break;
       }
       reg[p]=(reg[p]&0xFF00)|nxt;
@@ -611,13 +665,13 @@ int run(void)
 	  reg[p]++;
         break;
         case 0xC:
-	  work=memread(reg[p])+d+df;
+	  work=memread(reg[p])+d;
 	  if (work&0x100) df=1; else df=0;
 	  d=work;
 	  reg[p]++;
         break;
         case 0xd:
-	  work=memread(reg[p])-d-(df?0:1);
+	  work=memread(reg[p])-d;
         if (work&0x100) df=1; else df=0;
         d=work;
         reg[p]++;
@@ -627,7 +681,7 @@ int run(void)
         d<<=1;
         break;
         case 0xf:
-	  work=d-memread(reg[p])-(df?0:1);
+	  work=d-memread(reg[p]);
 	  if (work&0x100) df=1; else df=0;
 	  d=work;
 	  reg[p]++;

@@ -1,4 +1,4 @@
-1802 UNO v13
+1802 UNO v15
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -12,8 +12,8 @@ To set the ROM you must reflash the Arduino
 The various commands to save and read memory only operate on RAM
 You can "LOad" through the ROM but it won't change the contents
 
-By default, a simple Q blink program (7A 7B 30 00) is at 8000. You can
-run it if you put C0 80 00 at location 0 to jump to it.
+By default, ETOPS is in rom (see http://www.elf-emulation.com/software/rctops.html)
+TO run it put C0 80 00 at location 0 to jump to it.
 
 Keyboard
 ===
@@ -34,7 +34,7 @@ The keyboard is mapped like this:
 
 Serial Port
 ===
-On a terminal (9600 8 N 1) you can use normal keys like 0-9 A-F a-f + and these additional keys:
+On a terminal (9600 8 N 1) you can use normal keys like 0-9 A-F a-f and these additional keys:
 
 * ST=S
 * RS=R
@@ -46,6 +46,8 @@ On a terminal (9600 8 N 1) you can use normal keys like 0-9 A-F a-f + and these 
 * DA (1 sec) <
 * AD (1 sec) >
 
+Note: + does not act as Enter from the terminal; use $ to toggle EF4 instead.
+
 That means that like KIM UNO, you don't need the hardware to run it (well, you do need the Arduino).
 
 Other Serial Commands
@@ -54,6 +56,7 @@ Other Serial Commands
 * semicolon - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution
 * asterisk - Dump registers and state
 * ? - Dump 1K of RAM in 1802UNO Format (see below)
+* $ - Set EF4 for one cycle
 * @ - Load RAM in 1802UNO Format (see below and examples directory; also see binto1802.c)
 * X - Load RAM from Intel hex file
 * Y - Write 1K RAM to Intel hex file (hint, you can delete all the zero lines and keep the last EOF line using a text editor)
@@ -135,3 +138,34 @@ Of course, if you have the source to a program you can change it to use the seri
 
 
 
+Sample ETOPS Session
+===
+From terminal enter:
+LC0$80$00$R
+02G
+01$00$
+DE$AD$BE$EF$
+R
+01G
+01$00$
+$$$$R
+
+The first line loads the jump to the ETOPS monitor.
+
+THe 02G tells ETOPS to load memory. The address is set to 0100.
+
+Then the four bytes DE AD BE EF are set.
+
+A reset and then an ETOP view command (01G) follows. After entering the
+same address, you should see the bytes entered appear again.
+
+Of course, you can do all this from the hardware keyboard, as well:
+
+DA C 0 + 8 0 + 0 0 + RS
+0 2 GO
+0 1 + 0 0 +
+D E + A D + B E + E F +
+RS
+0 1 GO
+0 1 + 0 0 +
++ + + + RS
