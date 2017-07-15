@@ -13,7 +13,7 @@
 #include "main.h"
 #include "1802.h"
 
-#define VERSION "1802UNOv15"
+#define VERSION "1802UNOv16"
 
 // How many cycles between display refreshes?
 // Higher makes the simulation faster, but the screen more blinky
@@ -236,7 +236,7 @@ uint8_t parseChar(uint8_t n) //  parse keycode to return its ASCII code
 uint8_t xkeyPressed()    // just see if there's any keypress waiting
 { return (curkey==0?0:1); }
 
-extern uint8_t ef4;
+
 
 // Scan keyboard (modfied a bit)
 void scanKeys()
@@ -265,7 +265,7 @@ void scanKeys()
     for (col=0;col<8;col++)
     { if (digitalRead(aCols[col])==LOW)  // key is pressed
       { keyCode = col+row*8+1;
-        if (keyCode==20) ef4=1; else ef4=0;   // Set EF4 as long as + held down
+        if (keyCode==20 && !ef4term) ef4=1; else ef4=0;   // Set EF4 as long as + held down
         if (keyCode!=prevKey)
         {   //Serial.println();
             //Serial.print(" col: ");  Serial.print(col, DEC);

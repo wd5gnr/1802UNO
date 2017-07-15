@@ -19,4 +19,6 @@ void setdp(int pos, int state);
 #define KEY_ST 'S'
 #define KEY_SST '/'
 
+extern char threeHex[3][2];
+
 #endif

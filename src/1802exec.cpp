@@ -10,6 +10,20 @@ int runstate=0;
 int loadstate=0;
 int addstate=0; // this is bogus but handy
 int tracemode=0;
+uint8_t ef4term=0;
+
+// Properly print two hex digits
+void print2hex(uint8_t v)
+{
+  if (v<0x10) Serial.print('0');
+  Serial.print(v,HEX);
+}
+
+void print4hex(uint16_t v)
+{
+  print2hex(v>>8);
+  print2hex(v);
+}
 
 // Do an execution cycle
 int exec1802(int ch)
@@ -85,6 +99,17 @@ int exec1802(int ch)
    }
    return 1;
   }
+  if (ch=='!')
+  {
+    for (int i=0;i<3;i++)
+    for (int j=0;j<2;j++)
+    {
+      if (i==2&&j==0) Serial.print(" ");
+      Serial.print(threeHex[i][j],HEX);
+    }
+    Serial.println("");
+    return 1;
+  }
   if (ch=='Y' || ch=='y') // write intel hex
     {
       ihexo1802 writer;
@@ -106,7 +131,7 @@ int exec1802(int ch)
     Serial.println("@0000:");
     for (ptr=0;ptr<=MAXMEM;ptr++)
     {
-      Serial.print(ram[ptr],HEX);
+      print2hex(ram[ptr]);
       group++;
       if (group==16)
       {
@@ -124,10 +149,15 @@ int exec1802(int ch)
       int j;
       for (j=0;j<16;j++)
       {
-        Serial.print(j,HEX); Serial.print(':'); Serial.println(reg[j],HEX);
+        Serial.println();
+        Serial.print('R');
+        Serial.print(j,HEX);
+        Serial.print(':');
+        print4hex(reg[j]);
+        Serial.println("");
       }
-      Serial.print("DR:"); Serial.println(d,HEX);
-      Serial.print("DF:"); Serial.println(df);
+      Serial.print("DR:"); print2hex(d);
+      Serial.print("DF:"); Serial.println(df);  // all single digit
       Serial.print("X:"); Serial.println(x);
       Serial.print("P:"); Serial.println(p);
       Serial.print("Q:"); Serial.println(q);
@@ -147,8 +177,8 @@ int exec1802(int ch)
   if (ch==KEY_AD && runstate==0 && loadstate==0 && addstate==0) addstate=1;
   // EF4 push
 //  if (ch=='+') ef4=1; else ef4=0;   // EF4 now set in keyboard routine
-   if (ch=='$') ef4=ef4?0:1;
-  // EF1 push
+   if (ch=='$') ef4term=ef4term?0:1;
+   if (ef4==0) ef4=ef4term;  // let ef4term override ef4
   if (ch==KEY_SST && runstate==0)
   {
     data=memread(reg[p]);
@@ -205,6 +235,7 @@ int exec1802(int ch)
  setdp(0,q);
  setdp(1,loadstate!=0);
  setdp(2,runstate);
+ setdp(3,ef4);
  setdp(4,mp!=0);
   return rv;
 }

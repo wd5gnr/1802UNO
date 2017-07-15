@@ -1,4 +1,4 @@
-1802 UNO v15
+1802 UNO v16
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -55,8 +55,9 @@ Other Serial Commands
 * pipe - Go into serial terminal mode (until power cycle)
 * semicolon - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution
 * asterisk - Dump registers and state
+* Exclamation point - Dum address and data displays to terminal
 * ? - Dump 1K of RAM in 1802UNO Format (see below)
-* $ - Set EF4 for one cycle
+* $ - Set EF4 on/off (overrides HW keyboard)
 * @ - Load RAM in 1802UNO Format (see below and examples directory; also see binto1802.c)
 * X - Load RAM from Intel hex file
 * Y - Write 1K RAM to Intel hex file (hint, you can delete all the zero lines and keep the last EOF line using a text editor)
@@ -90,7 +91,8 @@ LEDs
 
 The far left decimal point is the Q LED.
 The next is lit for load state.
-The next is list for run state.
+The next is lit for run state.
+The next is list when EF4 is active.
 The decimal point between the two digits of the data display indicate memory protect.
 
 Known Problems
@@ -139,14 +141,31 @@ Of course, if you have the source to a program you can change it to use the seri
 Sample ETOPS Session
 ===
 From terminal enter:
-LC0$80$00$R
+LC0$$80$$00$$R
 02G
-01$00$
-DE$AD$BE$EF$
+01$
+$00$
+$
+DE$
+$AD$
+$BE$
+$EF$
+$
 R
 01G
-01$00$
-$$$$R
+01$
+$00$
+$
+$
+$
+$
+$
+$
+$
+$
+$R
+
+Note that if you send the $ characters too fast, you may get such a fast press of EF4 that the 1802 software running will miss it.
 
 The first line loads the jump to the ETOPS monitor.
 

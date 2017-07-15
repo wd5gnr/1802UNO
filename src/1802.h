@@ -26,6 +26,8 @@ extern unsigned int idata;
 extern uint16_t reg[16];
 extern uint8_t p,x,d,df,q,t;
 extern uint8_t ef1, ef2, ef3, ef4;
+extern uint8_t ef4term;
+
 extern uint8_t mp;  // memory protect
 // RAM
 extern uint8_t ram[MAXMEM+1]; 		// main 1KB RAM		 0x000-0x3FF
@@ -44,6 +46,7 @@ extern unsigned int caddress;  // current load address
 uint8_t memread(uint16_t a);
 uint8_t input(uint8_t port);
 void output(uint8_t port, uint8_t val);
-
+void print2hex(uint8_t v);
+void print4hex(uint16_t v);
 
 #endif
