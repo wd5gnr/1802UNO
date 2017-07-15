@@ -252,7 +252,7 @@ int exec1802(int ch)
   // run if required
   if (runstate==1) rv=run();
   // copy address if required
-  if (addstate) { caddress=data; addstate=0; setaddress(caddress); }  // don't care about address display setting here
+  if (addstate) { caddress=data; addstate=0; setaddress(caddress); addstate=0; }  // don't care about address display setting here
   // stop running if there was an error
   if (rv<=0 && runstate==1)
   {
@@ -512,26 +512,27 @@ int run(void)
     {
       case 0:
         reg[p]=tgt;
+        break;
       case 8:
         reg[p]+=2;
         break;
       case 1:
       case 9:
       if (q==(N==1)) reg[p]=tgt;
-      reg[p]+=2;
+      else reg[p]+=2;
       break;
       case 2:
       if (d==0) reg[p]=tgt;
-      reg[p]+=2;
+      else reg[p]+=2;
       break;
       case 3:
       case 0xb:
       if (df==(N==3)) reg[p]=tgt;
-      reg[p]+=2;
+      else reg[p]+=2;
       break;
       case 0xA:
       if (d!=0) reg[p]=tgt;
-      reg[p]+=2;
+      else reg[p]+=2;
       break;
       case 0xC:  // we don't do IE currently
       break;

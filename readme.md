@@ -1,4 +1,4 @@
-1802 UNO v12
+1802 UNO v13
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -13,7 +13,7 @@ The various commands to save and read memory only operate on RAM
 You can "LOad" through the ROM but it won't change the contents
 
 By default, a simple Q blink program (7A 7B 30 00) is at 8000. You can
-run it manually or put C0 80 00 at location 0 to jump to it.
+run it if you put C0 80 00 at location 0 to jump to it.
 
 Keyboard
 ===
