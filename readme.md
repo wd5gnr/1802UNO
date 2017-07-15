@@ -13,7 +13,7 @@ The various commands to save and read memory only operate on RAM
 You can "LOad" through the ROM but it won't change the contents
 
 By default, ETOPS is in rom (see http://www.elf-emulation.com/software/rctops.html)
-TO run it put C0 80 00 at location 0 to jump to it.
+TO run it put C0 80 00 at location 0 to jump to it. Note it uses RAM at 03FF
 
 Keyboard
 ===
@@ -135,8 +135,6 @@ to drive their own serial port via the Q and EF ports. This approach won't
 work with the simulator. I may try to port or recreate parts of Riley's BIOS althoug it will require being "ROMed" as the simulator only has 1K of RAM.
 
 Of course, if you have the source to a program you can change it to use the serial ports (very easy to read and write serial compared to bit-banging).
-
-
 
 Sample ETOPS Session
 ===

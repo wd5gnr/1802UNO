@@ -2,27 +2,14 @@
 // Al Williams July 2017
 #include <Arduino.h>
 #include <stdint.h>
-#include <EEPROM.h>
 #include <avr/pgmspace.h>  // note: AVR only!
 
 #include "1802.h"
 #include "main.h"
 #include "ihex1802.h"
 
-#define MAXMEM 0x3FF  // maximum memory address; important: only 1K of EEPROM to store stuff in
-#define LED_PORT 4     // port for DATA LED display
-#define SW_PORT 4      // Front panel switch port
-#define SER_INP 1     // UART input port
-#define SER_OUT 1     // UART output port
-#define CTL_PORT 7    // Control port
-#define A0_PORT 2     // LSD address display output port
-#define A1_PORT 3     // MSD address display output port
 
-// CPU states... run, load memory, or set address
-int runstate=0;
-int loadstate=0;
-int addstate=0; // this is bogus but handy
-int tracemode=0;
+
 int addisp=0;
 uint8_t adhigh=0;  // high address display for I/O
 uint8_t adlow=0;  // low address display for I/O
@@ -46,58 +33,7 @@ uint8_t mp=0;  // memory protect
 // RAM
 uint8_t ram[MAXMEM+1]; 		// main 1KB RAM		 0x000-0x3FF
 // ROM
-// ETOPS
-const uint8_t PROGMEM rom[]=
-  {
-    0x30, 0X3B,
-    0xf8, 0XFF,
-    0xa2,
-    0xe2,
-    0x90,
-    0xb3,
-    0xf8, 0x0c,
-    0xa3,
-    0xd3,
-    0x6c,
-    0x64,
-    0x22,
-    0xa1,
-    0x3f, 0x10,
-    0x37, 0x12,
-    0x6c,
-    0x64,
-    0x22,
-    0xb0,
-    0x3f, 0x18,
-    0x37, 0x1a,
-    0x6c,
-    0x64,
-    0x22,
-    0xa0,
-    0x81,
-    0x3a, 0x24,
-    0xd0,
-    0xff, 0x01,
-    0x32, 0x29,
-    0x7b,
-    0x3f, 0x29,
-    0x80,
-    0x52,
-    0x64,
-    0x22,
-    0x37, 0x2f,
-    0x39, 0x35,
-    0x6c,
-    0x50,
-    0x40,
-    0x52,
-    0x64,
-    0x22,
-    0x30, 0x29,
-    0xF8, 0x03,
-    0xb2,
-    0x30, 0x02
-  };
+#include <1802rom.h>
 
 uint16_t rombase=0x8000;
 
@@ -127,232 +63,9 @@ void reset()
   addisp=0;
 }
 
-// Do an execution cycle
-int exec1802(int ch)
-{
-  int rv=1;
-
-// commands
-// Go = run
-// ST = Stop run or load
-// RS = Reset
-// AD = Copy extended data to load address
-// + - ef4
-// DA - load
-// PC - memory protect on
-// SST - step
-// otherwise we build up a hex number in data (which is 16-bits but only
-// the lower 8 bits show and are used in most cases)
-// Should we stop running?
-  ch=ch>='a'&&ch<='z'?ch&0xDF:ch;  // convert to upper case
-
-// meta keys (1 second press)
-  if (ch=='>')  // save 1K to EEPROM
-  {
-    int ptr;
-    reset();
-    for (ptr=0;ptr<=(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) EEPROM.write(ptr,ram[ptr]);
-    return 0;
-  }
-  if (ch=='<' && mp==0 && runstate==0)  // load 1K from EEPROM if not MP and not running
-  {
-    int ptr;
-    for (ptr=0;ptr<=(MAXMEM<0x3FF?MAXMEM:0x3FF);ptr++) ram[ptr]=EEPROM.read(ptr);
-    reset();
-    return 0;
-  }
-  if (ch=='@' && mp==0)  // load memory from serial
-  {
-    uint16_t ptr=0;
-    uint8_t val=0;
-    int state=0;
-    while (state==0)
-    {
-      int c;
-      while ((c=Serial.read())==-1);
-      if ((c>='0'&&c<='9')||(c>='a'&&c<='f')||(c>='A'&&c<='F'))
-      {
-        ptr<<=4;
-        if (c>='a') c=c-'a'+10; else if (c>='A') c=c-'A'+10; else c-='0';
-        ptr+=c;
-      }
-     else
-     {
-       state=1;
-     }
-    }
-    while (state==1||state==4)
-   {
-    int c;
-    while ((c=Serial.read())==-1);
-    if (state==4 && (c<'0'&&c!='.')) continue; else state=1;  // skip multiple whitespace
-    if ((c>='0'&&c<='9')||(c>='a'&&c<='f')||(c>='A'&&c<='F'))
-    {
-      val<<=4;
-      if (c>='a') c=c-'a'+10; else if (c>='A') c=c-'A'+10; else c-='0';
-      val+=c;
-    }
-    else if (c=='.') state=3; else
-    {
-      ram[ptr++]=val;
-      state=4;
-      val=0;
-    }
-   }
-   return 1;
-  }
-  if (ch=='Y' || ch=='y') // write intel hex
-    {
-      ihexo1802 writer;
-      Serial.println("");
-      writer.write(ram,MAXMEM);
-      return 1;
-    }
-
-  if (ch=='X' || ch=='x')  // read intel hex
-    {
-      ihex1802 reader;
-      reader.read();
-      return 1;
-    }
-  if (ch=='?')  // dump memory to serial
-  {
-    uint16_t ptr;
-    int group=0;
-    Serial.println("@0000:");
-    for (ptr=0;ptr<=MAXMEM;ptr++)
-    {
-      Serial.print(ram[ptr],HEX);
-      group++;
-      if (group==16)
-      {
-        Serial.print('\n');
-        group=0;
-      }
-      else Serial.print(' ');
-    }
-    Serial.print(".\n");
-    return 1;
-    }
-    if (ch==';') tracemode^=1;   // trace toggle
-    if (ch=='*')    // dump processor state
-    {
-      int j;
-      for (j=0;j<16;j++)
-      {
-        Serial.print(j,HEX); Serial.print(':'); Serial.println(reg[j],HEX);
-      }
-      Serial.print("DR:"); Serial.println(d,HEX);
-      Serial.print("DF:"); Serial.println(df);
-      Serial.print("X:"); Serial.println(x);
-      Serial.print("P:"); Serial.println(p);
-      Serial.print("Q:"); Serial.println(q);
-      return 1;
-    }
-// regular keys
-  if (ch==KEY_ST && runstate==1) { runstate=0; caddress=reg[p]; }  // stop
-  // Should we start running?
-  if (ch==KEY_GO && runstate==0 && loadstate==0 && addstate==0) runstate=1;
-// Should we go to load state
-  if (ch==KEY_DA && runstate==0 && loadstate==0 && addstate==0) { loadstate=1;  data=memread(caddress);   }
-  // reset?
-  if (ch==KEY_RS) { reset(); runstate=0; addstate=0;  loadstate=0;}
-  // Stop load state
-  if (ch==KEY_ST && loadstate==1) loadstate=0;
-  // Load extended data register into caddress
-  if (ch==KEY_AD && runstate==0 && loadstate==0 && addstate==0) addstate=1;
-  // EF4 push
-//  if (ch=='+') ef4=1; else ef4=0;   // EF4 now set in keyboard routine
-   if (ch=='$') ef4=ef4?0:1;
-  // EF1 push
-  if (ch==KEY_SST && runstate==0)
-  {
-    data=memread(reg[p]);
-    setaddress(reg[p]);  // we don't care if the program is using address display here
-    run();
-    runstate=2;
-  }
-  if (runstate==2&&ch!=KEY_DA) runstate=0;
-  // set memory protect on without race (state 2 while held, then state 1)
-  if (ch==KEY_PC)
-  {
-    if (mp==0) mp=2;
-    if (mp==1) mp=0;
-  }
-  else
-  {
-    if (mp==2) mp=1;
-  }
-
-
-// build up hex number
-  if (ch>='0' && ch<='9') {idata=idata<<4|(ch-'0'); data=idata; }
-  if (ch>='A' && ch<='F') {idata=idata<<4|(ch-'A'+10); data=idata; }
-  // in case of serial input
-  if (ch>='a' && ch<='f') {idata=idata<<4|(ch-'a'+10); data=idata; }
-
-  // Ok now we can see what state we are in
-  // if loading (or displaying if mp==1)
-  if (loadstate==1 && ef4==1)  {  if (mp||caddress>=rombase) data=memread(caddress); else ram[caddress&MAXMEM]=data;  loadstate=2;  }
-  // state 2 waits for EF4 release
-  if (loadstate==2 && ef4==0) { loadstate=1; data=memread(++caddress); }
-  // run if required
-  if (runstate==1) { rv=run(); }
-  // copy address if required
-  if (addstate) { caddress=data; addstate=0; setaddress(caddress); addstate=0; }  // don't care about address display setting here
-  // stop running if there was an error
-  if (rv<=0 && runstate==1)
-  {
-    runstate=0;
-    caddress=reg[p];
-  }
-
-// address should show load address or execution address
-  if (runstate)
-    {
-      if (addisp) setaddress(adhigh<<8|adlow);
-      else setaddress(reg[p]);
-    }
-
-  if (loadstate) setaddress(caddress);
-  // set up data display
-  setdata(data);
-  // set up DP LEDs
- setdp(0,q);
- setdp(1,loadstate!=0);
- setdp(2,runstate);
- setdp(4,mp!=0);
-  return rv;
-}
 
 
 
-// Input from any port gives you the data register
-// except port 1 is serial input
-uint8_t input(uint8_t port)
-{
-  if (port==SER_INP)
-  {
-    int rv=Serial.read();
-    if (rv==-1) rv=0;
-    return rv;
-  }
-  return idata;
-}
-
-// Output to any port writes to the data display
-void output(uint8_t port, uint8_t val)
-{
-  if (port==SER_OUT) Serial.print((char)val);
-  else if (port==LED_PORT) data=val;
-  else if (port==A0_PORT) adlow=val;
-  else if (port==A1_PORT) adhigh=val;
-  else if (port==CTL_PORT)
-  {
-    noserial=val&1;  // set 1 to use serial port as I/O, else use as front panel
-    addisp=(val&2)==2; // set bit 1 to 1 to use address displays
-  }
-}
 
 // Emulation engine
 int run(void)
@@ -697,25 +410,4 @@ uint8_t inst=memread(reg[p]);
 
   }
 return 1;
-}
-
-
-// Intel hex stuff
-
-int ihex1802::getch(void)
-{
-  int c;
-  while ((c=Serial.read())==-1);
-  return c;
-}
-
-void ihex1802::setmem(uint16_t a, uint8_t d)
-{
-  ram[a&MAXMEM]=d;
-}
-
-int ihexo1802::putch(int c)
-{
-  Serial.print((char)c);
-  return 0;
 }
