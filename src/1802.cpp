@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include <EEPROM.h>
+#include <avr/pgmspace.h>  // note: AVR only!
 
 #include "1802.h"
 #include "main.h"
@@ -43,6 +44,26 @@ uint8_t mp=0;  // memory protect
 
 // RAM
 uint8_t ram[MAXMEM+1]; 		// main 1KB RAM		 0x000-0x3FF
+// ROM
+const uint8_t PROGMEM rom[]=
+  {
+    0x7A,
+    0x7B,
+    0x30,
+    0x00    // assumes rombase is XX00
+  };
+
+uint16_t rombase=0x8000;
+
+uint8_t memread(uint16_t a)
+{
+  if (a<rombase)
+    return ram[a&MAXMEM];
+  else
+    return pgm_read_byte_near(rom+(a-rombase));
+}
+
+
 
 // reset CPU
 void reset()
@@ -187,7 +208,7 @@ int exec1802(int ch)
   // Should we start running?
   if (ch==KEY_GO && runstate==0 && loadstate==0 && addstate==0) runstate=1;
 // Should we go to load state
-  if (ch==KEY_DA && runstate==0 && loadstate==0 && addstate==0) { loadstate=1;  data=ram[caddress&MAXMEM]; }
+  if (ch==KEY_DA && runstate==0 && loadstate==0 && addstate==0) { loadstate=1;  data=memread(caddress);   }
   // reset?
   if (ch==KEY_RS) { reset(); runstate=0; addstate=0;  loadstate=0;}
   // Stop load state
@@ -199,7 +220,7 @@ int exec1802(int ch)
   // EF1 push
   if (ch==KEY_SST && runstate==0)
   {
-    data=ram[reg[p]&MAXMEM];
+    data=memread(reg[p]);
     setaddress(reg[p]);  // we don't care if the program is using address display here
     run();
     runstate=2;
@@ -225,9 +246,9 @@ int exec1802(int ch)
 
   // Ok now we can see what state we are in
   // if loading (or displaying if mp==1)
-  if (loadstate==1 && ef4==1)  {  if (mp) data=ram[caddress&MAXMEM]; else ram[caddress&MAXMEM]=data;  loadstate=2;  }
+  if (loadstate==1 && ef4==1)  {  if (mp||caddress>=rombase) data=memread(caddress); else ram[caddress&MAXMEM]=data;  loadstate=2;  }
   // state 2 waits for EF4 release
-  if (loadstate==2 && ef4==0) { loadstate=1; caddress++; data=ram[caddress&MAXMEM]; }
+  if (loadstate==2 && ef4==0) { loadstate=1; data=memread(++caddress); }
   // run if required
   if (runstate==1) rv=run();
   // copy address if required
@@ -291,7 +312,7 @@ void output(uint8_t port, uint8_t val)
 // Emulation engine
 int run(void)
 {
-  uint8_t inst=ram[reg[p]&MAXMEM];
+  uint8_t inst=memread(reg[p]);
   reg[p]++;
   I=inst>>4;
   N=inst&0xF;
@@ -310,7 +331,7 @@ int run(void)
   switch (I)
   {
     case 0:
-    d=ram[reg[N]&MAXMEM];
+      d=memread(reg[N]);
     break;
     case 1:
     reg[N]++;
@@ -321,7 +342,7 @@ int run(void)
     case 3:
     // handle branches
     {
-      uint16_t tpc=ram[reg[p]];
+      uint16_t tpc=memread(reg[p]);
       uint16_t nxt=++reg[p];
       switch (N)
       {
@@ -361,16 +382,16 @@ int run(void)
         if (!d) nxt=tpc;
         break;
       }
-      reg[p]=nxt;
+      reg[p]=(reg[p]&0xFF00)|nxt;
       break;
     }
 
     case 4:
-    d=ram[reg[N]&MAXMEM];
+      d=memread(reg[N]);
     reg[inst&0x0f]++;
     break;
     case 5:
-    if (mp==0) ram[reg[N]&MAXMEM]=d;
+    if (mp==0 && reg[N]<rombase) ram[reg[N]&MAXMEM]=d;
     break;
     case 6:
     // IRX + I/O
@@ -379,13 +400,13 @@ int run(void)
       if (N==8) ;   // ?
       else if (N<8)
       {
-        output(N,ram[reg[x]&MAXMEM]);
+        output(N,memread(reg[x]));
         reg[x]++;
       }
       else
       {
         d=input(N-8);  // port 1-7
-        if (mp==0) ram[reg[x]&MAXMEM]=d;
+        if (mp==0 && reg[x]<rombase) ram[reg[x]&MAXMEM]=d;
       }
 
     break;
@@ -394,26 +415,26 @@ int run(void)
     {
       case 0:
       case 1:  // ths same since we don't manage IE
-      work=ram[reg[x]&MAXMEM];
+	work=memread(reg[x]);
       x=work>>4;
       p=work&0xF;
       reg[x]++;
       break;
       case 2:
-      d=ram[reg[x]&MAXMEM];
+	d=memread(reg[x]);
       reg[x]++;
       break;
       case 3:
-      if (mp==0) ram[reg[x]&MAXMEM]=d;
+      if (mp==0 && reg[x]<rombase) ram[reg[x]&MAXMEM]=d;
       reg[x]--;
       break;
       case 4:
-      work=ram[reg[x]]+d+df;
+	work=memread(reg[x])+d+df;
       if (work&0x100) df=1; else df=0;
       d=work;  // conversion will chop off top for us
       break;
       case 5:
-      work=ram[reg[x]]-d-(df?0:1);
+	work=memread(reg[x])-d-(df?0:1);
       if (work&0x100) df=1; else df=0;
       d=work;
       break;
@@ -425,17 +446,17 @@ int run(void)
       d=work;
       break;
       case 7:
-      work=d-ram[reg[x]]-(df?0:1);
+	work=d-memread(reg[x])-(df?0:1);
       if (work&0x100) df=1; else df=0;
       d=work;
       break;
       case 8:
       // we aren't doing interrupts, so T is never set except by SAV
-      if (mp==0) ram[reg[x]&MAXMEM]=t;
+      if (mp==0 && reg[x]<rombase) ram[reg[x]&MAXMEM]=t;
       break;
       case 9:
       t=x<<4|p;
-      if (mp==0) ram[reg[2]&MAXMEM]=t;
+      if (mp==0 && reg[x]<rombase) ram[reg[2]&MAXMEM]=t;
       x=p;
       reg[2]--;
       break;
@@ -444,12 +465,12 @@ int run(void)
         q=N&1;
         break;
       case 0xc:
-      work=d+ram[reg[p]];
+	work=d+memread(reg[p]);
       if (work&0x100) df=1; else df=0;
       d=work;
       break;
       case 0xd:
-      work=ram[reg[p]]-d-(df?0:1);
+	work=memread(reg[p])-d-(df?0:1);
       if (work&0x100) df=1; else df=0;
       d=work;
       reg[p]++;
@@ -461,7 +482,7 @@ int run(void)
       d=work;
       break;
       case 0xf:
-      work=d-ram[reg[p]]-(df?0:1);
+	work=d-memread(reg[p])-(df?0:1);
       if (work&0x100) df=1; else df=0;
       d=work;
       reg[p]++;
@@ -485,7 +506,8 @@ int run(void)
     // jumps
     if (N==4) break;  // NOP
     {
-    uint16_t tgt=ram[reg[p]&MAXMEM]<<8|ram[(reg[p]+1)&MAXMEM];
+      uint16_t tgt=memread(reg[p])<<8|memread(reg[p]+1);
+
     switch (N)
     {
       case 0:
@@ -540,24 +562,25 @@ int run(void)
       switch (N)
       {
         case 0:
-        d=ram[reg[x]&MAXMEM];
+	  d=memread(reg[x]);
         break;
         case 1:
-        d=d|ram[reg[x]&MAXMEM];
+        d=d|memread(reg[x]);
         break;
         case 2:
-        d=d&ram[reg[x]&MAXMEM];
+        d=d&memread(reg[x]);
         break;
         case 3:
-        d=d^ram[reg[x]&MAXMEM];
+        d=d^memread(reg[x]);
         break;
         case 4:
-        work=d+ram[reg[x]&MAXMEM];
+	  work=d+memread(reg[x]);
+
         if (work&0x100) df=1; else df=0;
         d=work;
         break;
         case 5:
-        work=ram[reg[x]&MAXMEM]-d;
+	  work=memread(reg[x])-d;
         if (work&0x100) df=1; else df=0;
         d=work;
         break;
@@ -566,34 +589,34 @@ int run(void)
         d>>=1;
         break;
         case 7:
-        work=d-ram[reg[x]&MAXMEM];
+	  work=d-memread(reg[x]);
         if (work&0x100) df=1; else df=0;
         d=work;
         break;
         case 8:
-        d=ram[reg[p]&MAXMEM];
+	  d=memread(reg[p]);
         reg[p]++;
         break;
         case 9:
-        d=ram[reg[p]&MAXMEM]|d;
+	  d=d|memread(reg[p]);
         reg[p]++;
         break;
         case 0xA:
-        d=ram[reg[p]&MAXMEM]&d;
-        reg[p]++;
+	  d=d&memread(reg[p]);
+	  reg[p]++;
         break;
         case 0xB:
-        d=ram[reg[p]&MAXMEM]^d;
-        reg[p]++;
+	  d=d^memread(reg[p]);
+	  reg[p]++;
         break;
         case 0xC:
-        work=ram[reg[p]]+d+df;
-        if (work&0x100) df=1; else df=0;
-        d=work;
-        reg[p]++;
+	  work=memread(reg[p])+d+df;
+	  if (work&0x100) df=1; else df=0;
+	  d=work;
+	  reg[p]++;
         break;
         case 0xd:
-        work=ram[reg[p]]-d-(df?0:1);
+	  work=memread(reg[p])-d-(df?0:1);
         if (work&0x100) df=1; else df=0;
         d=work;
         reg[p]++;
@@ -603,10 +626,10 @@ int run(void)
         d<<=1;
         break;
         case 0xf:
-        work=d-ram[reg[p]]-(df?0:1);
-        if (work&0x100) df=1; else df=0;
-        d=work;
-        reg[p]++;
+	  work=d-memread(reg[p])-(df?0:1);
+	  if (work&0x100) df=1; else df=0;
+	  d=work;
+	  reg[p]++;
         break;
 
 

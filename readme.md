@@ -6,7 +6,14 @@ See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for mo
 
 Configuration
 ===
-You have 1K of RAM and no interrupts.
+You have 1K of RAM at 0000 and no interrupts.
+There is a small ROM at 8000
+To set the ROM you must reflash the Arduino
+The various commands to save and read memory only operate on RAM
+You can "LOad" through the ROM but it won't change the contents
+
+By default, a simple Q blink program (7A 7B 30 00) is at 8000. You can
+run it manually or put C0 80 00 at location 0 to jump to it.
 
 Keyboard
 ===
