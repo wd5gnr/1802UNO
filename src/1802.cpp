@@ -73,6 +73,7 @@ void reset()
 int run(void)
 {
 uint8_t inst=memread(reg[p]);
+      
 #if 0
  if ((reg[p]&0xFF00)==0xFF00)
   {
@@ -239,6 +240,7 @@ uint8_t inst=memread(reg[p]);
 	work=d+memread(reg[p]);
       if (work&0x100) df=1; else df=0;
       d=work;
+      reg[p]++;
       break;
       case 0xd:
 	work=memread(reg[p])-d-(df?0:1);
