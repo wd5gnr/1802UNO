@@ -17,6 +17,8 @@ By default a simple HILO game is in ROM (see below)
 TO run it put C0 80 00 at location 0 to jump to it. Note it uses RAM at 03FF.
 On power up (but not reset) the first 3 bytes of RAM initialize to C0 80 00.
 
+The file 1802rom.h only includes another file (1802hilo.h or 1802etops.h) so it is reasonably easy to flip different ROM images around.
+
 Keyboard
 ===
 The keyboard is mapped like this:
