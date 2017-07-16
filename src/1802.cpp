@@ -31,7 +31,9 @@ uint8_t ef1, ef2, ef3, ef4;
 uint8_t mp=0;  // memory protect
 
 // RAM
-uint8_t ram[MAXMEM+1]; 		// main 1KB RAM		 0x000-0x3FF
+// Note: Hardcode a jump to ROM but don't ever set it again
+// So on power up, we go to ROM. If you mess that up, that's on you ;)
+uint8_t ram[MAXMEM+1]={0xC0, 0x80, 00}; 		// main 1KB RAM		 0x000-0x3FF
 // ROM
 #include <1802rom.h>
 
@@ -72,10 +74,11 @@ int run(void)
 {
 uint8_t inst=memread(reg[p]);
 #if 0
-  if (reg[p]&0xFF00==0xFF00)
+ if ((reg[p]&0xFF00)==0xFF00)
   {
   Serial.print("BIOS: ");
-  Serial.println(memread(reg[p]),HEX);
+  print4hex(reg[p]);
+  Serial.println();
   inst=0;
   }
 
@@ -203,7 +206,7 @@ uint8_t inst=memread(reg[p]);
       break;
       case 5:
 	work=memread(reg[x])-d-(df?0:1);
-      if (work&0x100) df=1; else df=0;
+      if (work&0x100) df=0; else df=1;
       d=work;
       break;
       case 6:
@@ -215,7 +218,7 @@ uint8_t inst=memread(reg[p]);
       break;
       case 7:
 	work=d-memread(reg[x])-(df?0:1);
-      if (work&0x100) df=1; else df=0;
+      if (work&0x100) df=0; else df=1;
       d=work;
       break;
       case 8:
@@ -239,7 +242,7 @@ uint8_t inst=memread(reg[p]);
       break;
       case 0xd:
 	work=memread(reg[p])-d-(df?0:1);
-      if (work&0x100) df=1; else df=0;
+      if (work&0x100) df=0; else df=1;
       d=work;
       reg[p]++;
       break;
@@ -251,7 +254,7 @@ uint8_t inst=memread(reg[p]);
       break;
       case 0xf:
 	work=d-memread(reg[p])-(df?0:1);
-      if (work&0x100) df=1; else df=0;
+      if (work&0x100) df=0; else df=1;
       d=work;
       reg[p]++;
       break;
@@ -350,8 +353,10 @@ uint8_t inst=memread(reg[p]);
         break;
         case 5:
 	  work=memread(reg[x])-d;
-        if (work&0x100) df=1; else df=0;
+        if (work&0x100) df=0; else df=1;
         d=work;
+
+	
         break;
         case 6:
         if (d&1) df=1; else df=0;
@@ -359,7 +364,7 @@ uint8_t inst=memread(reg[p]);
         break;
         case 7:
 	  work=d-memread(reg[x]);
-        if (work&0x100) df=1; else df=0;
+        if (work&0x100) df=0; else df=1;
         d=work;
         break;
         case 8:
@@ -386,7 +391,7 @@ uint8_t inst=memread(reg[p]);
         break;
         case 0xd:
 	  work=memread(reg[p])-d;
-        if (work&0x100) df=1; else df=0;
+        if (work&0x100) df=0; else df=1;
         d=work;
         reg[p]++;
         break;
@@ -396,7 +401,7 @@ uint8_t inst=memread(reg[p]);
         break;
         case 0xf:
 	  work=d-memread(reg[p]);
-	  if (work&0x100) df=1; else df=0;
+	  if (work&0x100) df=0; else df=1;
 	  d=work;
 	  reg[p]++;
         break;

@@ -156,7 +156,7 @@ int exec1802(int ch)
         print4hex(reg[j]);
         Serial.println("");
       }
-      Serial.print("DR:"); print2hex(d);
+      Serial.print("DR:"); print2hex(d); Serial.println();
       Serial.print("DF:"); Serial.println(df);  // all single digit
       Serial.print("X:"); Serial.println(x);
       Serial.print("P:"); Serial.println(p);
