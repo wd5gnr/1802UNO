@@ -13,7 +13,7 @@ The various commands to save and read memory only operate on RAM
 You can "LOad" through the ROM but it won't change the contents
 
 You can load ETOPS in rom (see http://www.elf-emulation.com/software/rctops.html)
-By default the IDIOT/4 monitor is in ROM (see below)
+By default a HiLo game is in ROM (see below)
 TO run it put C0 80 00 at location 0 to jump to it. Note it uses RAM at 03FF.
 On power up (but not reset) the first 3 bytes of RAM initialize to C0 80 00.
 
@@ -141,6 +141,12 @@ to drive their own serial port via the Q and EF ports. This approach won't
 work with the simulator. I may try to port or recreate parts of Riley's BIOS althoug it will require being "ROMed" as the simulator only has 1K of RAM.
 
 Of course, if you have the source to a program you can change it to use the serial ports (very easy to read and write serial compared to bit-banging).
+
+Available ROMS
+===
+* 1802hilo.h - A hilo game (the default)
+* ETOPS - A keyboard/LED-based monitor
+* IDIOT/4 - A monitor that uses the serial port
 
 Using IDIOT/4
 ===
