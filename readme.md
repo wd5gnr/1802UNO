@@ -164,6 +164,8 @@ Load memory
 !M 300 20 40 10
 
 You can use a semicolon to keep going after a line (e.g., !M 300 20 40 10;)
+(NOTE: That seems to not work; perhaps a bug in the emulator or in my port
+of the monitor code)
 
 Run a program at 100.
 
