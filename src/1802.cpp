@@ -169,7 +169,11 @@ uint8_t inst=memread(reg[p]);
     // IRX + I/O
       if (N==0) reg[x]++;
       else
-      if (N==8) ;   // ?
+      if (N==8)
+	{
+	  // Not an 1802 instruction so we could use it as a BP
+	}
+      
       else if (N<8)
       {
         output(N,memread(reg[x]));

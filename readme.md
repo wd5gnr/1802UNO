@@ -1,4 +1,4 @@
-1802 UNO v18
+1802 UNO v19
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -13,11 +13,11 @@ The various commands to save and read memory only operate on RAM
 You can "LOad" through the ROM but it won't change the contents
 
 You can load ETOPS in rom (see http://www.elf-emulation.com/software/rctops.html)
-By default a simple HILO game is in ROM (see below)
+By default the IDIOT/4 monitor is in ROM (see below)
 TO run it put C0 80 00 at location 0 to jump to it. Note it uses RAM at 03FF.
 On power up (but not reset) the first 3 bytes of RAM initialize to C0 80 00.
 
-The file 1802rom.h only includes another file (1802hilo.h or 1802etops.h) so it is reasonably easy to flip different ROM images around.
+The file 1802rom.h only includes another file (1802idiot.h, 1802hilo.h, or 1802etops.h) so it is reasonably easy to flip different ROM images around.
 
 Keyboard
 ===
@@ -141,6 +141,37 @@ to drive their own serial port via the Q and EF ports. This approach won't
 work with the simulator. I may try to port or recreate parts of Riley's BIOS althoug it will require being "ROMed" as the simulator only has 1K of RAM.
 
 Of course, if you have the source to a program you can change it to use the serial ports (very easy to read and write serial compared to bit-banging).
+
+Using IDIOT/4
+===
+IDIOT/4 is a monitor by Lee Hart. I hacked it up to use the virutalized serial port instead of bit banging. You need a terminal at 9600 8 N and 1 and you'll want local echo on.
+
+You have to switch the terminal to raw mode (| command) before you can issue commands to the monitor. That change stays in force until you reboot the simulator (not press the reset button). Then you can no longer use the front panel commands.
+
+So the general work flow would be:
+
+G |
+
+You'll get a sign on message and a prompt. The basic commands are dump memory:
+
+?M 8000 20
+
+Dump registers (shows them in memory; you need a decoder ring to know which is which)
+
+?R
+
+Load memory 
+!M 300 20 40 10
+
+You can use a semicolon to keep going after a line (e.g., !M 300 20 40 10;)
+
+Run a program at 100.
+
+$P 100
+
+There are more things you can do. See http://www.retrotechnology.com/memship/mship_idiot.html for a good write up.
+
+NOTE: IDIOT scans backwards for memory. The simulator maps the 1K block to every 1K block from 0000-7FFF. So it will find the RAM at 7C00 which is fine.
 
 Sample ETOPS Session
 ===

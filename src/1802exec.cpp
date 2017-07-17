@@ -59,6 +59,7 @@ int exec1802(int ch)
     reset();
     return 0;
   }
+  // end temporary
   if (ch=='@' && mp==0)  // load memory from serial
   {
     uint16_t ptr=0;
