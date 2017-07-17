@@ -16,7 +16,7 @@ You can load ETOPS in rom (see http://www.elf-emulation.com/software/rctops.html
 or the IDIOT/4 monitor in rom (see below)
 By default a HiLo game is in ROM (see below)
 
-TO run it put C0 80 00 at location 0 to jump to it. Note it uses RAM at 03FF.
+To run it put C0 80 00 at location 0 to jump to it. Note it uses RAM at 03FF.
 On power up (but not reset) the first 3 bytes of RAM initialize to C0 80 00.
 
 The file 1802rom.h only includes another file (1802idiot.h, 1802hilo.h, or 1802etops.h) so it is reasonably easy to flip different ROM images around.
