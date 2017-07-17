@@ -118,7 +118,7 @@ Port Summary
 ===
 * Port 1 - Serial port
 * Port 2 - LSD of address display (if enabled)
-* POrt 3 - MSD of address display (if enabled)
+* Port 3 - MSD of address display (if enabled)
 * Port 4 - Switch/Data LED
 * Port 7 - Control port. Set bit 0 to disable serial front panel. Set bit 1 to put address displays under program control (see port 2,3).
 
@@ -214,7 +214,7 @@ Note that if you send the $ characters too fast, you may get such a fast press o
 
 The first line loads the jump to the ETOPS monitor.
 
-THe 02G tells ETOPS to load memory. The address is set to 0100.
+The 02G tells ETOPS to load memory. The address is set to 0100.
 
 Then the four bytes DE AD BE EF are set.
 
@@ -237,7 +237,7 @@ Playing HiLo
 See https://groups.yahoo.com/neo/groups/cosmacelf/files/HI%20LO/
 
 The original instructions have to be modified a bit. Be sure and hold the
-+ key down long enough for the Q LED to light when guessing. The blink blocks
+\+ key down long enough for the Q LED to light when guessing. The blink blocks
 so it is easy to press it and release before the 1802 "looks" at it.
 
 In addition, the LEDs don't "bink" because they are 7 segment. What you will see is for a high you will see 00/F0 for a low you will see 00/0F and when the nubmer is correct you will see it blink between 00 and the number.
@@ -248,23 +248,23 @@ Note the code required a little patching to move the data out of ROM.
 
 Here's the original "read me" text for the game:
 
-ELF HI LO Game Instructions:
-
-The purpose of this game is to guess a number selected by the computer between 1 and 100 in as few tries as possible.
-
-Reset and Run the ELF. All the LED's will be blinking. Press I and the computer will select a secret number, then the Q LED will come on, indicating that your input is needed. Enter a number using the toggle switches then press I. 
-
-At that point, one of 3 things can happen:
-
-1- Your number is higher than the secret number, and so the HIGH nibble on the LED display (i.e. the leftmost 4 LED's) will blink
-
-2- Your number is lower than the secret number and the LOW nibble on the LED display (i.e. the rightmost 4 LED's) will blink
-
-3- Your guessed the correct number and it will appear on the LED display and blink
-
-Press I again and the Q LED will come on and you will be able to enter another guess as before. If you guessed the correct number, then the number of tries will be displayed and blinked and the game will be over. 
-
-Hope you like it.
-
-Walid Maalouli
+>ELF HI LO Game Instructions:
+>
+>The purpose of this game is to guess a number selected by the computer between 1 and 100 in as few tries as possible.
+>
+>Reset and Run the ELF. All the LED's will be blinking. Press I and the computer will select a secret number, then the Q LED will come on, indicating that your input is needed. Enter a number using the toggle switches then press I. 
+>
+>At that point, one of 3 things can happen:
+>
+>1.- Your number is higher than the secret number, and so the HIGH nibble on the LED display (i.e. the leftmost 4 LED's) will blink
+>
+>2.- Your number is lower than the secret number and the LOW nibble on the LED display (i.e. the rightmost 4 LED's) will blink
+>
+>3.- Your guessed the correct number and it will appear on the LED display and blink
+>
+>Press I again and the Q LED will come on and you will be able to enter another guess as before. If you guessed the correct number, then the number of tries will be displayed and blinked and the game will be over. 
+>
+>Hope you like it.
+>
+>Walid Maalouli
 
