@@ -12,8 +12,10 @@ To set the ROM you must reflash the Arduino
 The various commands to save and read memory only operate on RAM
 You can "LOad" through the ROM but it won't change the contents
 
-You can load ETOPS in rom (see http://www.elf-emulation.com/software/rctops.html)
+You can load ETOPS in rom (see http://www.elf-emulation.com/software/rctops.html and below)
+or the IDIOT/4 monitor in rom (see below)
 By default a HiLo game is in ROM (see below)
+
 TO run it put C0 80 00 at location 0 to jump to it. Note it uses RAM at 03FF.
 On power up (but not reset) the first 3 bytes of RAM initialize to C0 80 00.
 
