@@ -147,8 +147,8 @@ Of course, if you have the source to a program you can change it to use the seri
 Available ROMS
 ===
 * 1802hilo.h - A hilo game (the default)
-* ETOPS - A keyboard/LED-based monitor
-* IDIOT/4 - A monitor that uses the serial port
+* 1802etops.h - A keyboard/LED-based monitor
+* 1802idiot.h - A monitor that uses the serial port
 
 Using IDIOT/4
 ===
