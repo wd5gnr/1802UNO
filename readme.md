@@ -29,7 +29,7 @@ The keyboard is mapped like this:
 * ST - Stop running or stop load mode
 * RS - Reset
 * AD - Copy extended data register to load address
-* Plus - EF4 (Input key for program or load mode enter)
+* \+ - EF4 (Input key for program or load mode enter)
 * DA - While idle, enter load mode
 * PC - Protect memory toggle so that load mode displays data
 * SST - Single step
@@ -44,7 +44,7 @@ On a terminal (9600 8 N 1) you can use normal keys like 0-9 A-F a-f and these ad
 
 * ST=S
 * RS=R
-* AD=Equal sign
+* AD=Equal sign (=)
 * DA=L
 * GO=G
 * PC=P
@@ -58,10 +58,10 @@ That means that like KIM UNO, you don't need the hardware to run it (well, you d
 
 Other Serial Commands
 ===
-* pipe - Go into serial terminal mode (until power cycle)
-* semicolon - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution
-* asterisk - Dump registers and state
-* Exclamation point - Dum address and data displays to terminal
+* \| - Go into serial terminal mode (until power cycle)
+* \; - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution
+* \* - Dump registers and state
+* \! - Dum address and data displays to terminal
 * ? - Dump 1K of RAM in 1802UNO Format (see below)
 * $ - Set EF4 on/off (overrides HW keyboard)
 * @ - Load RAM in 1802UNO Format (see below and examples directory; also see binto1802.c)
@@ -108,7 +108,7 @@ Known Problems
 
 Future Plans
 ===
-* All done for now
+* A proper simulation-based monitor to examine the target program while running
 
 Hackaday
 ===
@@ -125,7 +125,7 @@ Port Summary
 
 Building
 ===
-I used Platform.io to build. You may need to adjust the .ini file to suit.
+I used Platform.io to build. You may need to adjust the .ini file to suit. See http://platformio.org.
 
 Tool
 ===
@@ -140,7 +140,7 @@ A Note About Compatiblity
 There is quite a bit of software out there for the 1802 that uses a terminal
 such as monitors, Basic, Forth, etc. In many cases, these programs expect
 to drive their own serial port via the Q and EF ports. This approach won't
-work with the simulator. I may try to port or recreate parts of Riley's BIOS althoug it will require being "ROMed" as the simulator only has 1K of RAM.
+work with the simulator. I may try to port or recreate parts of Riley's BIOS although it will require being "ROMed" as the simulator only has 1K of RAM.
 
 Of course, if you have the source to a program you can change it to use the serial ports (very easy to read and write serial compared to bit-banging).
 
@@ -230,7 +230,7 @@ D E + A D + B E + E F +
 RS
 0 1 GO
 0 1 + 0 0 +
-+ + + + RS
+\+ + + + RS
 
 Playing HiLo
 ===
