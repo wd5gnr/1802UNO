@@ -21,4 +21,22 @@ void setdp(int pos, int state);
 
 extern char threeHex[3][2];
 
+
+// Define to 1 for simulation monitor built-in
+#define MONITOR 1
+#if MONITOR==1
+int monitor(void);
+typedef struct
+{
+  uint8_t type;  // 0 = off, 1=add, 2=p, 3==i
+  uint16_t target;
+} BP;
+
+
+extern BP bp[16];
+
+int mon_checkbp(void);
+
+#endif
+
 #endif

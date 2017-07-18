@@ -31,6 +31,7 @@ extern uint8_t ef4term;
 extern uint8_t mp;  // memory protect
 // RAM
 extern uint8_t ram[MAXMEM+1]; 		// main 1KB RAM		 0x000-0x3FF
+extern const uint8_t rom[];
 extern uint16_t rombase;
 extern uint8_t adhigh;  // high address display for I/O
 extern uint8_t adlow;  // low address display for I/O
@@ -44,6 +45,7 @@ extern int tracemode;
 extern unsigned int caddress;  // current load address
 
 uint8_t memread(uint16_t a);
+void memwrite(uint16_t a, uint8_t d);
 uint8_t input(uint8_t port);
 void output(uint8_t port, uint8_t val);
 void print2hex(uint8_t v);

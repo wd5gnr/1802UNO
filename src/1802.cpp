@@ -48,6 +48,14 @@ uint8_t memread(uint16_t a)
 }
 
 
+void memwrite(uint16_t a, uint8_t d)
+{
+  if (a>=rombase || mp==1) return;
+  ram[a&MAXMEM]=d;
+}
+
+    
+
 
 // reset CPU
 void reset()
@@ -74,6 +82,9 @@ int run(void)
 {
 uint8_t inst=memread(reg[p]);
       
+#if MONITOR==1
+ if (mon_checkbp()==0) return 1;
+#endif 
 #if 0
  if ((reg[p]&0xFF00)==0xFF00)
   {
@@ -163,7 +174,7 @@ uint8_t inst=memread(reg[p]);
     reg[inst&0x0f]++;
     break;
     case 5:
-    if (mp==0 && reg[N]<rombase) ram[reg[N]&MAXMEM]=d;
+       memwrite(reg[N],d); 
     break;
     case 6:
     // IRX + I/O
@@ -182,7 +193,7 @@ uint8_t inst=memread(reg[p]);
       else
       {
         d=input(N-8);  // port 1-7
-        if (mp==0 && reg[x]<rombase) ram[reg[x]&MAXMEM]=d;
+        memwrite(reg[x],d); 
       }
 
     break;
@@ -201,7 +212,7 @@ uint8_t inst=memread(reg[p]);
       reg[x]++;
       break;
       case 3:
-      if (mp==0 && reg[x]<rombase) ram[reg[x]&MAXMEM]=d;
+	memwrite(reg[x],d); 
       reg[x]--;
       break;
       case 4:
@@ -228,11 +239,11 @@ uint8_t inst=memread(reg[p]);
       break;
       case 8:
       // we aren't doing interrupts, so T is never set except by SAV
-      if (mp==0 && reg[x]<rombase) ram[reg[x]&MAXMEM]=t;
+	memwrite(reg[x],t); 
       break;
       case 9:
       t=x<<4|p;
-      if (mp==0 && reg[x]<rombase) ram[reg[2]&MAXMEM]=t;
+      memwrite(reg[2],t); 
       x=p;
       reg[2]--;
       break;

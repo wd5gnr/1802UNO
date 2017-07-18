@@ -43,6 +43,13 @@ int exec1802(int ch)
 // the lower 8 bits show and are used in most cases)
 // Should we stop running?
   ch=ch>='a'&&ch<='z'?ch&0xDF:ch;  // convert to upper case
+  #if MONITOR==1
+  if (ch=='\\')
+    {
+      monitor();
+      return 1;
+    }
+  #endif
 
 // meta keys (1 second press)
   if (ch=='>')  // save 1K to EEPROM
