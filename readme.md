@@ -273,104 +273,95 @@ Built In Monitor
 ===
 Enter Monitor mode with the \ key while in front panel mode. You do NOT have to switch the keyboard using the | character. Note the keyboard and display will be dead while the monitor is active.
 
-Here's the basic help:
+Upper/lower case does not matter. Note that backspace sort of works, except on multi-line M commands. Even then, it works, just with a twist (see the M command for more).
+
+You can #define MONITOR 0 in main.h if you want to disable it.
 
 
-Commands:
+Commands 
+---
+Note: lower case letters represent numbers
 
-Note that backspace sort of works, kind of.
+* B - List all breakpoints
+* B n - List breakpoint n (0-F)
+* B n - - (that's a dash after the number) Disable breakpoint n
+* B n @aaaa - Break at address a, breakpoint n
+* B n Pp - Break when P becomes equal to p
+* B n Iii - Break when current instruction is ii
+* C - Continue execution (assuming 1802 is running; same as Q)
+* G aaaa - Goto address
+* G aaaa p - Set P to p and goto address
+* I n - Input from port n
+* M aaaa - Display 256 bytes from address aaaa
+* M aaaa nnn - Display nnn bytes from address aaaa
+* M aaaa=nn nn nn; - Set bytes starting at aaaa (multiple lines allowed with semicolon only on last line; see notes below)
+* N - Execute next instruction
+* O n bb - Output byte bb to port n
+* Q - Quit. Will resume execution if 1802 is running.
+* R - Display all registers
+* R n - Display register N (note 10 and above are special registers, see below.
+* R n=vvvv - Set register n to value vvvv
+* X - Exit. This will not resume execution.
+* . - Dot command. Sends next characters to the front panel simulation. That is, .$ toggles EF4. .41$ enters the number 41 on the keypad and presses (but does not release) EF4
+* ? - Very basic help message
 
-R - Display all registers
-R2 - Display register 2
-R2=AA - Set register 2 to AA
+Registers
+---
+In addition to working with registers 0-F, you can access other registers using numbers larger than 0F.
 
-Note: X=10, P=11, D=12, DF=13, Q=14, and T=15 -- display all registers to see that list
+    R0:8042	R1:00FF
+    R2:00FE	R3:0002
+    R4:80F0	R5:800B
+    R6:8064	R7:00FD
+    R8:0000	R9:0000
+    RA:0000	RB:0000
+   RC:0000	RD:0000
+   RE:0000	RF:0000
+   (10) X:7	(11) P:6
+   (12) D:0B	(13) DF:0
+   (14) Q:0	(15) T:0
 
-M 400 - Display 100 hex bytes at 400
-M 400 10 - Display 10 hex bytes at 400
-M 400=20 30 40; - Set data starting at 400 (end with semicolon)
+Note that R12 is the accumulator "D" not register D. YOu can see the list by using the R command.
 
-G 400 - Goto 400
-G 400 3 - Goto 400 with P=3
-
-B - List all enabled breakpoints
-B0 - - Disable Breakpoint 0 (that is a dash as in B0 -)
-BF @200 - Set breakpoint F to address 200
-BF P3 - Set breakpoint when P=3 
-BF I7A - Set breakpoint when instruction 7A executes 
-
-Note would be possible to do data write (or even read) breakpoints
-Would also be possible to do rnages of addresses, if desired
-
-N - Execute next instruction
+Examples
+---
+    R2=AA - Set register 2 to AA
 
 
-I 2 - Show input from N=2
-O 2 10 - Write 10 to output N=2
+    M 400 - Display 100 hex bytes at 400
+    M 400 10 - Display 10 hex bytes at 400
+    M 400=20 30 40; - Set data starting at 400 (end with semicolon)
 
-Note: The keypad and display are dead while the monitor is in control
+    G 400 - Goto 400
+    G 400 3 - Goto 400 with P=3
 
-X - Exit to front panel mode (not running)
+    BF I7A - Set breakpoint when instruction 7A executes 
 
-C - Exit and continue running (if already running)
-Q - Same as C
+    I 2 - Show input from N=2
+    O 1 41 - Write 41 to output N=2 (this will echo on terminal)
 
-Commands:
+Notes about the M command
+---
+You can enter new bytes on one line:
+    M 400=7A 7b 30 00;
 
-R - Display all registers
-R2 - Display register 2
-R2=AA - Set register 2 to AA
+However, if you start a new line (you get a colon prompt), you will not be able to backspace past the current byte:
 
-Note: X=10, P=11, D=12, DF=13, Q=14, and T=15 -- display all registers to see that list
-
-M 400 - Display 100 hex bytes at 400
-M 400 10 - Display 10 hex bytes at 400
-M 400=20 30 40; - Set data starting at 400 (end with semicolon)
-
-Note that you can use the first line with full backspace:
-M 400=20 30 40;
-
-But if you start a new line (you get a colon prompt), you will not be able to backspace past the current byte:
-
-M 400=
-: 20 30 40
-: 50 60 70;
+    M 400=
+    : 20 30 40
+    : 50 60 70;
 
 Backing up while entering 30 can only delete the 30 and not the 20. Also, instead of backing up you can just keep going 
 as in:
 
-:M 400=
-: 200 300 400;
+    :M 400=
+    : 200 300 400;
 
 All 3 bytes will then be zero.
 
-G 400 - Goto 400
-G 400 3 - Goto 400 with P=3
-
-B - List all enabled breakpoints
-B0 - - Disable Breakpoint 0 (that is a dash as in B0 -)
-BF @200 - Set breakpoint F to address 200
-BF P3 - Set breakpoint when P=3 
-BF I7A - Set breakpoint when instruction 7A executes 
-
-Note would be possible to do data write (or even read) breakpoints
-Would also be possible to do ranges of addresses, if desired
-
-N - Execute next instruction
-
-
-I 2 - Show input from N=2
-O 2 10 - Write 10 to output N=2
-
-
-X - Exit to front panel mode (not running)
-
-C - Exit and continue running (if already running)
-Q - Same as C
-
-.+ - Send next character(s) to the front panel interpreter (no spaces)
-
-The last command is pretty handy. For example:
+About the dot command
+---
+The dot command is pretty handy. For example:
 
 .44!
 
@@ -396,4 +387,4 @@ For fun while playing HiLo, try this (from front panel mode):
 
 Now look at your 1802 UNO upside down!
 
-You can #define MONITOR 0 in main.h if you want to disable it.
+
