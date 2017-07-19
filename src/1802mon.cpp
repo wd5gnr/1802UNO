@@ -6,8 +6,6 @@
 /*
 Commands:
 
-Note that backspace sort of works, kind of.
-
 R - Display all registers
 R2 - Display register 2
 R2=AA - Set register 2 to AA
@@ -17,6 +15,23 @@ Note: X=10, P=11, D=12, DF=13, Q=14, and T=15 -- display all registers to see th
 M 400 - Display 100 hex bytes at 400
 M 400 10 - Display 10 hex bytes at 400
 M 400=20 30 40; - Set data starting at 400 (end with semicolon)
+
+Note that you can use the first line with full backspace:
+M 400=20 30 40;
+
+But if you start a new line (you get a colon prompt), you will not be able to backspace past the current byte:
+
+M 400=
+: 20 30 40
+: 50 60 70;
+
+Backing up while entering 30 can only delete the 30 and not the 20. Also, instead of backing up you can just keep going 
+as in:
+
+:M 400=
+: 200 300 400;
+
+All 3 bytes will then be zero.
 
 G 400 - Goto 400
 G 400 3 - Goto 400 with P=3
@@ -28,7 +43,7 @@ BF P3 - Set breakpoint when P=3
 BF I7A - Set breakpoint when instruction 7A executes 
 
 Note would be possible to do data write (or even read) breakpoints
-Would also be possible to do rnages of addresses, if desired
+Would also be possible to do ranges of addresses, if desired
 
 N - Execute next instruction
 
@@ -42,6 +57,8 @@ X - Exit to front panel mode (not running)
 
 C - Exit and continue running (if already running)
 Q - Same as C
+
+.+ - Send next character(s) to the front panel interpreter (no spaces)
 
 */
 
@@ -209,21 +226,6 @@ int mon_checkbp(void)
 }
 
 
-// Need to work on making the line ends consistent and check the backspace and Esc codes
-// and new lines too -- mostly done. There are a few wacky backpsace cases left
-
-int waiteol(void)
-{
-  int c;
-  do
-    {
-      c=Serial.read();
-
-    } while (c!='\r' && c!=0x1b);
-  return c;
-}
-
-
 
 int monitor(void)
 {
@@ -233,7 +235,7 @@ int monitor(void)
       Serial.print("\r\n>");
       cmd=readline(&terminate);
       if (terminate==0x1b) continue;
-      if (!strchr("RMGBIOXQCN?",cmd))
+      if (!strchr("RMGBIOXQCN?.",cmd))
 	{
 	  Serial.print('?');
 	  continue;
@@ -243,9 +245,14 @@ int monitor(void)
       
       switch(cmd)
 	{
+	case '.':
+	  for (char *cp=cmdbuf+1;*cp;cp++)
+	    exec1802(*cp);
+	  break;
+
 	case '?':
-	  Serial.println(F("<R>egister, <M>emory, <G>o, <B>reakpoint, <N>ext, <I>nput, <O>utput, e<X>it, <Q>uit, <C>ontinue"));
-	  Serial.print(F("Examples: R   RB   RB=2F00   M 100 10    M 100=<CR>AA 55 22;    B 0 @101"));
+	  Serial.println(F("<R>egister, <M>emory, <G>o, <B>reakpoint, <N>ext, <I>nput, <O>utput, e<X>it, <Q>uit, <C>ontinue, .cccc (send characters to front panel; no space after .)"));
+	  Serial.print(F("Examples: R   RB   RB=2F00   M 100 10    M 100=<CR>AA 55 22;    B 0 @101   .44+"));
 	  break;
 
 	case 'N':

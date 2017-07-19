@@ -61,7 +61,7 @@ Other Serial Commands
 * \| - Go into serial terminal mode (until power cycle)
 * \; - Toggle trace mode (warning: makes execution slow). Prints address, opcode, and D on each instruction execution
 * \* - Dump registers and state
-* \! - Dum address and data displays to terminal
+* \! - Dump address and data displays to terminal
 * ? - Dump 1K of RAM in 1802UNO Format (see below)
 * $ - Set EF4 on/off (overrides HW keyboard)
 * @ - Load RAM in 1802UNO Format (see below and examples directory; also see binto1802.c)
