@@ -46,36 +46,116 @@ Q - Same as C
 */
 
 
+static char cmdbuf[33];
+static int cb;
+
+
 static int cmd;  // command
 static uint16_t arg;  // one argument
 static int terminate;  // termination character
+static int noread;
 
 
-uint16_t readhex(int *term, uint16_t def=0xFFFF)
+int getch(void)
+{
+  int c;
+  do
+    {
+      c=Serial.read();
+    }
+  while (c==-1);
+  return c;
+}
+
+
+// This skips leading blanks, makes all internal whitespace one space, and trims trailing blanks
+// This is very important since some of the parsing assumes there will be 0 or 1 space but no more
+// and no tabs etc.
+
+uint8_t readline(int *terminate)
+{
+  int c;
+  cb=0;
+  cmdbuf[0]='\0';
+  while (1)
+    {
+      c=getch();
+      if (c=='\r')
+	{
+	  if (terminate) *terminate='\r';
+	  while (cb && cmdbuf[cb-1]==' ') cb--;
+	  cmdbuf[cb]='\0';
+	  if (cb) cb=1;
+	  return *cmdbuf;
+	}
+      if (c==0x1b)
+	{
+	  cmdbuf[0]='\0';
+	  cb=0;
+	  if (terminate) *terminate=0x1b;
+	  return '\0';
+	}
+      if (c==8 && cb!=0)
+	{
+	  cb--;
+	  continue;
+	}
+      if (cb>sizeof(cmdbuf)-2)
+	{
+	  Serial.print('\x7'); // sound bell
+	  continue;
+	}
+      
+      if (isspace(c)&&cb==0) continue;
+      if (cb&&isspace(c)&&cmdbuf[cb-1]==' ') continue; else if (isspace(c)) c=' ';
+      cmdbuf[cb++]=toupper(c);
+    }
+}
+
+
+
+uint16_t readhexX(int (*getcfp)(void), int *term, uint16_t def=0xFFFF)
 {
   uint16_t val=def;
   int first=1;
   int c;
+  
   while (1)
     {
-      c=Serial.read();
-      if (c==-1) continue;
-      if (c==8 && first==0) { val>>=4; continue; }
-      c=toupper(c);
+      c=getcfp();
       if (!isxdigit(c))
 	{
 	  if (first && c!='\r' && c!=';' && c!=8 && c!=0x1b) continue;
 	  if (term) *term=c;
+	  noread=first;
 	  return val;
 	}
-      if (first) val=0; else val*=16;
+      if (c==8) val>>4;  // in case of serial input
+      c=toupper(c);
+      if (first) val=0; else val<<=4;
       first=0;
       if (c>='A') c=c-'A'+10; else c-='0';
       val+=c;
     }
 }
 
-  
+uint16_t readhex(int *term, uint16_t def=0xFFFF)
+{
+  return readhexX(getch,term,def);
+}
+
+int getbufc(void)
+{
+  if (cmdbuf[cb]=='\0') return '\r';
+  return cmdbuf[cb++];
+}
+
+
+uint16_t readhexbuf(int *term, uint16_t def=0xFFFF)
+{
+  return readhexX(getbufc,term,def);
+}
+
 
 
 BP bp[16];
@@ -84,7 +164,7 @@ void dispbp(int bpn)
 {
   if (bp[bpn].type==0) return;
   Serial.print("\nBP");
-  Serial.print(bpn);
+  Serial.print(bpn,HEX);
   Serial.print(": ");
   if (bp[bpn].type==1) Serial.print("@");
   if (bp[bpn].type==2) Serial.print("P");
@@ -147,24 +227,25 @@ int waiteol(void)
 
 int monitor(void)
 {
+  int noarg;
   while (1)
     {
       Serial.print("\r\n>");
-      do { cmd=Serial.read(); 
-      } while (cmd==-1);
-      cmd=toupper(cmd);
+      cmd=readline(&terminate);
+      if (terminate==0x1b) continue;
       if (!strchr("RMGBIOXQCN?",cmd))
 	{
 	  Serial.print('?');
 	  continue;
 	}
-      arg=readhex(&terminate);
-      if (terminate==0x1b|| terminate==8) continue;
+      noarg=0;
+      if (cmdbuf[cb]) arg=readhexbuf(&terminate); else noarg=1;
+      
       switch(cmd)
 	{
 	case '?':
 	  Serial.println(F("<R>egister, <M>emory, <G>o, <B>reakpoint, <N>ext, <I>nput, <O>utput, e<X>it, <Q>uit, <C>ontinue"));
-	  Serial.print(F("Examples: R   RB   RB=2F00   M 100 10    M 100=AA 55 22; B 0 @101"));
+	  Serial.print(F("Examples: R   RB   RB=2F00   M 100 10    M 100=<CR>AA 55 22;    B 0 @101"));
 	  break;
 
 	case 'N':
@@ -175,42 +256,35 @@ int monitor(void)
 	  break;
 	  
 	case 'B':
-	if (arg>=0x10)
+	if (noarg||arg>=0x10)
 	  {
 	    int i;
 	    for (i=0;i<sizeof(bp)/sizeof(bp[0]);i++) dispbp(i);
+	    break;
 	  }
 	if (terminate!='\r')
 	  {
 	    int cc;
-	    do 
-	      {
-		cc=Serial.read();
-	      } while (cc==-1||cc==' '||cc=='\t');
-	    if (cc==0x1b) break;
-	    if (cc=='\r') terminate='\r';
-	    else if (cc=='-') { if (waiteol()=='\r') bp[arg].type=0;   break;    }
-	    
+	    cc=terminate;
+	    if (cc==' ') cc=getbufc();
+	    if (cc=='-') { bp[arg].type=0;   break;    }
 	    if (cc=='@')
 	      {
-		cc=readhex(&terminate);
-		if (terminate==0x1b) break;
+		cc=readhexbuf(&terminate);
 		bp[arg].target=cc;
 		bp[arg].type=1;
 		break;
 	      }
 	    if (cc=='p'||cc=='P')
 	      {
-		cc=readhex(&terminate);
-		if (terminate==0x1b) break;
+		cc=readhexbuf(&terminate);
 		bp[arg].target=cc&0xF;
 		bp[arg].type=2;
 		break;
 	      }
 	    if (cc=='i'||cc=='I')
 	      {
-		cc=readhex(&terminate);
-		if (terminate==0x1b) break;
+		cc=readhexbuf(&terminate);
 		bp[arg].target=cc&0xFF;
 		bp[arg].type=3;
 		break;
@@ -218,7 +292,7 @@ int monitor(void)
 	    
 		
 	  }
-	if (terminate=='\r')
+	else
 	  {
 	    dispbp(arg);
 	  }
@@ -226,7 +300,7 @@ int monitor(void)
 	
 	
 	case 'R':
-	  if (arg==0xFFFF)
+	  if (noarg)
 	    {
 	      int i;
 	      for (i=0;i<=15;i+=2)
@@ -261,8 +335,7 @@ int monitor(void)
 		{
 		  if (terminate=='=')
 		    {
-		      uint16_t v=readhex(&terminate);
-		      if (terminate==0x1b) break;
+		      uint16_t v=readhexbuf(&terminate);
 		      reg[arg]=v;
 		    }
 		  else
@@ -279,8 +352,7 @@ int monitor(void)
 		    case 0x10:
 		      if (terminate=='=')
 			{
-			  uint16_t v=readhex(&terminate);
-			  if (terminate==0x1b) break;
+			  uint16_t v=readhexbuf(&terminate);
 			  x=v;
 			}
 		      else
@@ -294,8 +366,7 @@ int monitor(void)
 		    case 0x11:
 		      if (terminate=='=')
 			{
-			  uint16_t v=readhex(&terminate);
-			  if (terminate==0x1b) break;
+			  uint16_t v=readhexbuf(&terminate);
 			  p=v;
 			}
 		      else
@@ -309,8 +380,7 @@ int monitor(void)
 		    case 0x12:
 		      if (terminate=='=')
 			{
-			  uint16_t v=readhex(&terminate);
-			  if (terminate==0x1b) break;
+			  uint16_t v=readhexbuf(&terminate);
 			  d=v;
 			}
 		      else
@@ -324,8 +394,7 @@ int monitor(void)
 		    case 0x13:
 		      if (terminate=='=')
 			{
-			  uint16_t v=readhex(&terminate);
-			  if (terminate==0x1b) break;
+			  uint16_t v=readhexbuf(&terminate);
 			  df=v;
 			}
 		      else
@@ -339,8 +408,7 @@ int monitor(void)
 		    case 0x14:
 		      if (terminate=='=')
 			{
-			  uint16_t v=readhex(&terminate);
-			  if (terminate==0x1b) break;
+			  uint16_t v=readhexbuf(&terminate);
 			  q=v;
 			}
 		      else
@@ -352,8 +420,7 @@ int monitor(void)
 		    case 0x15:
 		      if (terminate=='=')
 			{
-			  uint16_t v=readhex(&terminate);
-			  if (terminate==0x1b) break;
+			  uint16_t v=readhexbuf(&terminate);
 			  t=v;
 			}
 		      else
@@ -378,16 +445,15 @@ int monitor(void)
 
 	case 'O':
 	  {
-	    uint8_t v=readhex(&terminate);
-	    if (terminate!=0x1b) output(arg,v);
+	    uint8_t v=readhexbuf(&terminate);
+	    output(arg,v);
 	    break;
 	  }
 	  
 	case 'G':
 	  {
 
-	    if (terminate!='\r') p=readhex(&terminate);
-	    if (terminate==0x1b) break;
+	    if (terminate!='\r') p=readhexbuf(&terminate);
 	    reg[p]=arg;
 	    runstate=1;
 	    return 0;
@@ -400,19 +466,26 @@ int monitor(void)
 	    if (terminate=='=')
 	      {
 		uint8_t d;
+		while (cmdbuf[cb]!=0)
+		  {
+		    d=readhexbuf(&terminate,0);
+		    if (noread==0) memwrite(arg++,d);
+		    if (terminate==';') break;
+		  } 
+		if (terminate==';') break;
 		do
 		  {
-		    d=readhex(&terminate);
-		    if (terminate==0x1b) break;
-		    memwrite(arg++,d);
-		  } while (terminate!=';');
+		    if (terminate=='\r'||terminate=='=') Serial.print("\n: ");
+		    d=readhex(&terminate,0);
+		    if (terminate!=';' || noread==0)
+		      memwrite(arg++,d);
+		  } while (terminate!=';'); 
 	      }
 	    else
 	      {
 		uint16_t i;
 		unsigned ct=16;
-		if (terminate!='\r') arg2=readhex(&terminate,0);
-		if (terminate==0x1b) break;
+		if (terminate!='\r') arg2=readhexbuf(&terminate,0);
 		if (arg2==0) arg2=0x100;
 		for (i=arg;i<arg+arg2;i++)
 		  {
