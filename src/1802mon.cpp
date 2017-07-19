@@ -162,7 +162,7 @@ uint16_t readhexX(int (*getcfp)(void), int *term, uint16_t def=0xFFFF)
 	  noread=first;
 	  return val;
 	}
-      if (c==8) val>>4;  // in case of serial input
+      if (c==8) val>>=4;  // in case of serial input
       c=toupper(c);
       if (first) val=0; else val<<=4;
       first=0;
@@ -507,11 +507,13 @@ int monitor(void)
 	      }
 	    else
 	      {
-		uint16_t i;
+		uint16_t i, limit;
 		unsigned ct=16;
 		if (terminate!='\r') arg2=readhexbuf(&terminate,0);
 		if (arg2==0) arg2=0x100;
-		for (i=arg;i<arg+arg2;i++)
+	        limit=(arg+arg2)-1;
+		if (limit<arg) limit=0xFFFF;  // wrapped around!
+		for (i=arg;i<=limit;i++)
 		  {
 		    if (ct%16==0)
 		      {
@@ -524,6 +526,7 @@ int monitor(void)
 		    
 		    print2hex(memread(i));
 		    Serial.print(' ');
+		    if (i==0xFFFF) break;  // hit limit
 		    if (Serial.read()==0x1b) break;
 		  }
 	      }

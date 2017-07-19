@@ -273,7 +273,7 @@ Built In Monitor
 ===
 Enter Monitor mode with the \ key while in front panel mode. You do NOT have to switch the keyboard using the | character. Note the keyboard and display will be dead while the monitor is active.
 
-Upper/lower case does not matter. Note that backspace sort of works, except on multi-line M commands. Even then, it works, just with a twist (see the M command for more).
+Upper/lower case does not matter. Note that backspace sort of works, except on multi-line M commands. Even then, it works, just with a twist (see the M command for more). You can use Escape to abort a line. Esc will also abort a long memory dump.
 
 You can #define MONITOR 0 in main.h if you want to disable it.
 
@@ -347,6 +347,8 @@ Notes about the M command
 You can enter new bytes on one line:
     M 400=7A 7b 30 00;
 
+Note that there is a limit on line size (currently 31 characters).
+
 However, if you start a new line (you get a colon prompt), you will not be able to backspace past the current byte:
 
     M 400=
@@ -390,3 +392,7 @@ For fun while playing HiLo, try this (from front panel mode):
 Now look at your 1802 UNO upside down!
 
 
+Hard Breakpoint
+---
+Code a 68 (an illegal 1802 instruction) to force a jump to the built-in
+monitor.

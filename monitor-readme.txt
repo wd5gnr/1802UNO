@@ -122,3 +122,10 @@ Note you still can't write to ROM.
 
 Note that MP is still respected.
 
+Maybe to do:
+Address range breakpoints
+Counted breakpoints
+Data read/write breakpoints (ranged)
+Rom patch system
+Control commands to manipulate port 7
+Control command to change display refresh interval

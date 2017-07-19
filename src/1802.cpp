@@ -83,7 +83,7 @@ int run(void)
 uint8_t inst=memread(reg[p]);
       
 #if MONITOR==1
- if (mon_checkbp()==0) return 1;
+ if (monactive==0 && mon_checkbp()==0) return 1;
 #endif 
 #if 0
  if ((reg[p]&0xFF00)==0xFF00)
@@ -183,6 +183,10 @@ uint8_t inst=memread(reg[p]);
       if (N==8)
 	{
 	  // Not an 1802 instruction so we could use it as a BP
+	  #if MONITOR==1
+	  if (!monactive) monitor();
+	  break;
+	  #endif
 	}
       
       else if (N<8)
