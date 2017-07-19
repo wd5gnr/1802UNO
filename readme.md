@@ -187,6 +187,7 @@ NOTE: IDIOT scans backwards for memory. The simulator maps the 1K block to every
 Sample ETOPS Session
 ===
 From terminal enter:
+
     LC0$$80$$00$$R
     02G
     01$
