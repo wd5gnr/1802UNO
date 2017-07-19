@@ -317,11 +317,13 @@ In addition to working with registers 0-F, you can access other registers using 
     RA:0000	RB:0000
     RC:0000	RD:0000
     RE:0000	RF:0000
-    \(10) X:7	(11) P:6
-    \(12) D:0B	(13) DF:0
-    \(14) Q:0	(15) T:0
+    (10) X:7	(11) P:6
+    (12) D:0B	(13) DF:0
+    (14) Q:0	(15) T:0
 
 Note that R12 is the accumulator "D" not register D. You can see the list by using the R command.
+
+Note, too, that the parens mess up the GitHub markdown formatting, but escaping them doesn't work either (actually, it fixes the formatting but the \\ characaters appear in the text).
 
 Examples
 ---
