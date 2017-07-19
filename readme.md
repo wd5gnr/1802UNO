@@ -388,11 +388,11 @@ You'll see that the input reads 5A, as set.
 
 For fun while playing HiLo, try this (from front panel mode):
 
-\
-O 7 2
-o 2 14
-o 3 07
-c
+    \
+    O 7 2
+    o 2 14
+    o 3 07
+    c
 
 Now look at your 1802 UNO upside down!
 
