@@ -15,9 +15,6 @@
 
 #define VERSION "1802UNOv19"
 
-// How many cycles between display refreshes?
-// Higher makes the simulation faster, but the screen more blinky
-#define DISPLAY_DIVSOR 32  // number of ticks between display refresh
 #define SERIAL_ESCAPE '|'  // turn terminal input into real terminal input
 
 
@@ -96,11 +93,11 @@ void loop()
    else exec1802(curkey);
    curkey=0;
   }
-  if (tick%DISPLAY_DIVSOR==0) scanKeys();   // scan the keyboard
+  if (tick%DISPLAY_DIVISOR==0) scanKeys();   // scan the keyboard
   exec1802(curkey);   // process even if 0
   curkey=0;         // clear out keyboard
 // Update display only so often
-  if (tick%DISPLAY_DIVSOR==0) driveLEDs();
+  if (tick%DISPLAY_DIVISOR==0) driveLEDs();
   tick++;
 }
 

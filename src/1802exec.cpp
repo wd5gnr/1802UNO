@@ -25,6 +25,30 @@ void print4hex(uint16_t v)
   print2hex(v);
 }
 
+void updateLEDdata(void)
+{
+  // address should show load address or execution address
+  if (runstate)
+    {
+      if (addisp) setaddress(adhigh<<8|adlow);
+      else setaddress(reg[p]);
+    }
+
+  if (loadstate) setaddress(caddress);
+  // set up data display
+  setdata(data);
+  // set up DP LEDs
+ setdp(0,q);
+ setdp(1,loadstate!=0);
+ setdp(2,runstate);
+ if (ef4==0) ef4=ef4term;
+ setdp(3,ef4);
+ setdp(4,mp!=0);
+
+}
+
+
+
 // Do an execution cycle
 int exec1802(int ch)
 {
@@ -186,7 +210,8 @@ int exec1802(int ch)
   // EF4 push
 //  if (ch=='+') ef4=1; else ef4=0;   // EF4 now set in keyboard routine
    if (ch=='$') ef4term=ef4term?0:1;
-   if (ef4==0) ef4=ef4term;  // let ef4term override ef4
+   if (ef4==0) ef4=ef4term;  // let ef4term override ef4 (need this for run even though LED update sets it too)
+   
   if (ch==KEY_SST && runstate==0)
   {
     data=memread(reg[p]);
@@ -219,7 +244,11 @@ int exec1802(int ch)
   // state 2 waits for EF4 release
   if (loadstate==2 && ef4==0) { loadstate=1; data=memread(++caddress); }
   // run if required
-  if (runstate==1) { rv=run(); }
+#if MONITOR==1
+  if (runstate==1 && monactive==0) { rv=run(); }
+#else
+  if (runstate==1) rv=run();
+#endif
   // copy address if required
   if (addstate) { caddress=data; addstate=0; setaddress(caddress); addstate=0; }  // don't care about address display setting here
   // stop running if there was an error
@@ -229,21 +258,6 @@ int exec1802(int ch)
     caddress=reg[p];
   }
 
-// address should show load address or execution address
-  if (runstate)
-    {
-      if (addisp) setaddress(adhigh<<8|adlow);
-      else setaddress(reg[p]);
-    }
-
-  if (loadstate) setaddress(caddress);
-  // set up data display
-  setdata(data);
-  // set up DP LEDs
- setdp(0,q);
- setdp(1,loadstate!=0);
- setdp(2,runstate);
- setdp(3,ef4);
- setdp(4,mp!=0);
+  updateLEDdata();
   return rv;
 }

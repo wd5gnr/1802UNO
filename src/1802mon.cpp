@@ -73,12 +73,27 @@ static int terminate;  // termination character
 static int noread;
 
 
+int monactive=0;
+
+
 int getch(void)
 {
   int c;
+  int ctr=0;
   do
     {
       c=Serial.read();
+      if (c==-1)
+	{
+	  if (++ctr%DISPLAY_DIVISOR==0)
+	    {
+	      updateLEDdata();
+	      driveLEDs();
+	      scanKeys();
+	      ctr=0;
+	    }
+	}
+      
     }
   while (c==-1);
   return c;
@@ -230,6 +245,7 @@ int mon_checkbp(void)
 int monitor(void)
 {
   int noarg;
+  monactive=1;
   while (1)
     {
       Serial.print("\r\n>");
@@ -444,8 +460,8 @@ int monitor(void)
 	  
 	      break;
 		  
-	case 'Q': { runstate=0; return 0; }
-	case 'C': case 'X': return 1;
+	case 'Q': { runstate=0; monactive=0; return 0; }
+	case 'C': case 'X': monactive=0; return 1;
 	case 'I':
 	  print2hex(input(arg));
 	  break;
@@ -463,6 +479,7 @@ int monitor(void)
 	    if (terminate!='\r') p=readhexbuf(&terminate);
 	    reg[p]=arg;
 	    runstate=1;
+	    monactive=0;
 	    return 0;
 
 	  }

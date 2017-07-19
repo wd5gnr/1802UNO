@@ -1,6 +1,11 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
+
+// How many cycles between display refreshes?
+// Higher makes the simulation faster, but the screen more blinky
+#define DISPLAY_DIVISOR 32  // number of ticks between display refresh
+
 int freeRam(void);
 void interpretkeys(void);
 void setupUno(void);
@@ -36,6 +41,8 @@ typedef struct
 extern BP bp[16];
 
 int mon_checkbp(void);
+extern int monactive;
+
 
 #endif
 

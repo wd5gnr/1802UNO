@@ -50,5 +50,6 @@ uint8_t input(uint8_t port);
 void output(uint8_t port, uint8_t val);
 void print2hex(uint8_t v);
 void print4hex(uint16_t v);
+void updateLEDdata(void);
 
 #endif

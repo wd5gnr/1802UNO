@@ -91,7 +91,6 @@ N - Execute next instruction
 I 2 - Show input from N=2
 O 2 10 - Write 10 to output N=2
 
-Note: The keypad and display are dead while the monitor is in control
 
 X - Exit to front panel mode (not running)
 
@@ -116,6 +115,7 @@ I 4
 
 You'll see that the input reads 5A, as set.
 
+
 Todo:
 
 Need to range check certain things.
@@ -123,3 +123,4 @@ Need to range check certain things.
 Note you still can't write to ROM.
 
 Note that MP is still respected.
+
