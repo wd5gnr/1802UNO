@@ -67,7 +67,7 @@ Other Serial Commands
 * @ - Load RAM in 1802UNO Format (see below and examples directory; also see binto1802.c)
 * X - Load RAM from Intel hex file
 * Y - Write 1K RAM to Intel hex file (hint, you can delete all the zero lines and keep the last EOF line using a text editor)
-* \\ - Enter monitor mode. This is a meta-monitor running in the host Arduino. See monitor-readme.txt for details
+* \\ - Enter monitor mode. This is a meta-monitor running in the host Arduino. See section below for more details
 
 Using the Serial Port from an 1802 Program
 ===
