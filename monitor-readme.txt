@@ -1,5 +1,3 @@
-Experimental support for an Arduino-hosted monitor. Still a few kinks.
-
 Enter Monitor mode with the \ key while in front panel mode. You do NOT have to switch the keyboard using the | character. Note the keyboard and display will be dead while the monitor is active.
 
 Here's the basic help:

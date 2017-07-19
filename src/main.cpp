@@ -13,7 +13,7 @@
 #include "main.h"
 #include "1802.h"
 
-#define VERSION "1802UNOv19"
+#define VERSION "1802UNOv20"
 
 #define SERIAL_ESCAPE '|'  // turn terminal input into real terminal input
 
