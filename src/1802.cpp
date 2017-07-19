@@ -103,7 +103,7 @@ uint8_t inst=memread(reg[p]);
     print4hex(reg[p]-1);
     Serial.print(':');
     print2hex(inst);
-    Serial.print(' ');
+    Serial.print(" D=");
     print2hex(d);
     Serial.println("");
   }

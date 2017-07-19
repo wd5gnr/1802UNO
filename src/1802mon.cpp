@@ -194,14 +194,13 @@ BP bp[16];
   
 void dispbp(int bpn)
 {
-  if (bp[bpn].type==0) return;
   Serial.print("\nBP");
   Serial.print(bpn,HEX);
   Serial.print(": ");
   if (bp[bpn].type==1) Serial.print("@");
   if (bp[bpn].type==2) Serial.print("P");
   if (bp[bpn].type==3) Serial.print("I");
-  print4hex(bp[bpn].target);
+  if (bp[bpn].type==0) Serial.print(" DISABLED");else print4hex(bp[bpn].target);
 }
 
 

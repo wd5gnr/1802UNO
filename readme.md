@@ -109,7 +109,7 @@ Known Problems
 
 Future Plans
 ===
-* A proper simulation-based monitor to examine the target program while running
+* All done for now.
 
 Hackaday
 ===
@@ -187,29 +187,29 @@ NOTE: IDIOT scans backwards for memory. The simulator maps the 1K block to every
 Sample ETOPS Session
 ===
 From terminal enter:
-LC0$$80$$00$$R
-02G
-01$
-$00$
-$
-DE$
-$AD$
-$BE$
-$EF$
-$
-R
-01G
-01$
-$00$
-$
-$
-$
-$
-$
-$
-$
-$
-$R
+    LC0$$80$$00$$R
+    02G
+    01$
+    $00$
+    $
+    DE$
+    $AD$
+    $BE$
+    $EF$
+    $
+    R
+    01G
+    01$
+    $00$
+    $
+    $
+    $
+    $
+    $
+    $
+    $
+    $
+    $R
 
 Note that if you send the $ characters too fast, you may get such a fast press of EF4 that the 1802 software running will miss it.
 
@@ -224,14 +224,14 @@ same address, you should see the bytes entered appear again.
 
 Of course, you can do all this from the hardware keyboard, as well:
 
-DA C 0 + 8 0 + 0 0 + RS
-0 2 GO
-0 1 + 0 0 +
-D E + A D + B E + E F +
-RS
-0 1 GO
-0 1 + 0 0 +
-\+ + + + RS
+    DA C 0 + 8 0 + 0 0 + RS
+    0 2 GO
+    0 1 + 0 0 +
+    D E + A D + B E + E F +
+    RS
+    0 1 GO
+    0 1 + 0 0 +
+    \+ + + + RS
 
 Playing HiLo
 ===
@@ -243,7 +243,7 @@ so it is easy to press it and release before the 1802 "looks" at it.
 
 In addition, the LEDs don't "bink" because they are 7 segment. What you will see is for a high you will see 00/F0 for a low you will see 00/0F and when the nubmer is correct you will see it blink between 00 and the number.
 
-Once the game is over and it shows you the # of guesses you made, you'll have to press RESET for a new game.
+Once the game is over and it shows you the # of guesses you made, you'll have to press RESET and run for a new game.
 
 Note the code required a little patching to move the data out of ROM.
 
@@ -369,7 +369,7 @@ The dot command is pretty handy. For example:
 
 .44!
 
-Will set the data input (port 64) to 44 and then display the address and data
+Will set the data input (port 4) to 44 and then display the address and data
 LEDs on the terminal.
 
 .; is also useful (set/reset trace mode)
