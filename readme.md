@@ -128,6 +128,10 @@ Building
 ===
 I used Platform.io to build. You may need to adjust the .ini file to suit. See http://platformio.org.
 
+To build and upload try:
+
+    pio run --target upload
+
 Tool
 ===
 The file binto1802 will convert a binary file into a loadable file at address 0. Of course, you can edit the file and change this address. You can compile this tool with:
@@ -212,7 +216,7 @@ From terminal enter:
     $
     $R
 
-Note that if you send the $ characters too fast, you may get such a fast press of EF4 that the 1802 software running will miss it.
+Note that if you send the $ characters too fast, you may get such a fast press of EF4 that the 1802 software running will miss.
 
 The first line loads the jump to the ETOPS monitor.
 

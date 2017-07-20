@@ -108,7 +108,7 @@ int exec1802(int ch)
       }
      else
      {
-       state=1;
+       state=4;
      }
     }
     while (state==1||state==4)
@@ -202,7 +202,7 @@ int exec1802(int ch)
 // Should we go to load state
   if (ch==KEY_DA && runstate==0 && loadstate==0 && addstate==0) { loadstate=1;  data=memread(caddress);   }
   // reset?
-  if (ch==KEY_RS) { reset(); runstate=0; addstate=0;  loadstate=0;}
+  if (ch==KEY_RS) { reset(); return 1; }
   // Stop load state
   if (ch==KEY_ST && loadstate==1) loadstate=0;
   // Load extended data register into caddress

@@ -26,4 +26,6 @@ can't upload over the serial port (until you power off/on).
 
 * bcd1.txt - Same as above but uses IDL to stop the processor while waiting for input. Press run to continue.
 
+* bcdcount.txt - Count from 00-99 on LEDs.
+
 * disp.hex - Displays AA5591 on the address and data displays
