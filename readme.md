@@ -370,13 +370,13 @@ Note that there is a limit on line size (currently 31 characters).
 However, if you start a new line (you get a colon prompt), you will not be able to backspace past the current byte:
 
     M 400=
-    400: 20 30 40
-    403: 50 60 70;
+    0400: 20 30 40
+    0403: 50 60 70;
 
 Backing up while entering 30 can only delete the 30 and not the 20. Also, instead of backing up you can just keep going as in:
 
     :M 400=
-    400: 200 300 400;
+    0400: 200 300 400;
 
 All 3 bytes will then be zero. Note that if you start entering a byte, you will overwrite that byte even if you backspace it out (it will write as a zero).
 
