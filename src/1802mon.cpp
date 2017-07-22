@@ -155,14 +155,18 @@ uint16_t readhexX(int (*getcfp)(void), int *term, uint16_t def=0xFFFF)
   while (1)
     {
       c=getcfp();
-      if (!isxdigit(c))
+      if (!isxdigit(c)&&c!=8)
 	{
-	  if (first && c!='\r' && c!=';' && c!=8 && c!=0x1b) continue;
+	  if (first && c!='\r' && c!=';' && c!=0x1b) continue;
 	  if (term) *term=c;
 	  noread=first;
 	  return val;
 	}
-      if (c==8) val>>=4;  // in case of serial input
+      if (c==8)
+	{
+	  val>>=4;  // in case of serial input
+	  continue;
+	}
       c=toupper(c);
       if (first) val=0; else val<<=4;
       first=0;
@@ -498,7 +502,12 @@ int monitor(void)
 		if (terminate==';') break;
 		do
 		  {
-		    if (terminate=='\r'||terminate=='=') Serial.print("\n: ");
+		    if (terminate=='\r'||terminate=='=')
+		      {
+			Serial.print('\n');
+			print4hex(arg);
+			Serial.print(": ");
+		      }
 		    d=readhex(&terminate,0);
 		    if (terminate!=';' || noread==0)
 		      memwrite(arg++,d);

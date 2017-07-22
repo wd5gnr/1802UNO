@@ -31,6 +31,8 @@ Patched for ROM by Al Williams
 
 */
 
+uint16_t rombase=0x8000;
+
 const uint8_t PROGMEM rom[]=
   {
     0x90,	

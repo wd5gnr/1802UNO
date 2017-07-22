@@ -2,15 +2,7 @@
 #define __1802_H
 #include <stdint.h>
 
-// Configuration
-#define MAXMEM 0x3FF  // maximum memory address; important: only 1K of EEPROM to store stuff in
-#define LED_PORT 4     // port for DATA LED display
-#define SW_PORT 4      // Front panel switch port
-#define SER_INP 1     // UART input port
-#define SER_OUT 1     // UART output port
-#define CTL_PORT 7    // Control port
-#define A0_PORT 2     // LSD address display output port
-#define A1_PORT 3     // MSD address display output port
+#include "1802config.h"
 
 // public interface
 void reset(void);  // reset
@@ -51,5 +43,28 @@ void output(uint8_t port, uint8_t val);
 void print2hex(uint8_t v);
 void print4hex(uint16_t v);
 void updateLEDdata(void);
+
+#if MONITOR==1
+int monitor(void);
+typedef struct
+{
+  uint8_t type;  // 0 = off, 1=add, 2=p, 3==i
+  uint16_t target;
+} BP;
+
+
+extern BP bp[16];
+
+int mon_checkbp(void);
+extern int monactive;
+
+
+#endif
+
+
+
+#if BIOS==1
+int bios(uint16_t fn);
+#endif
 
 #endif

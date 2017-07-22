@@ -33,11 +33,9 @@ uint8_t mp=0;  // memory protect
 // RAM
 // Note: Hardcode a jump to ROM but don't ever set it again
 // So on power up, we go to ROM. If you mess that up, that's on you ;)
-uint8_t ram[MAXMEM+1]={0xC0, 0x80, 00}; 		// main 1KB RAM		 0x000-0x3FF
+uint8_t ram[MAXMEM+1]={0xC0, rombase>>8, rombase&0xFF}; 		// main 1KB RAM		 0x000-0x3FF
 // ROM
 #include <1802rom.h>
-
-uint16_t rombase=0x8000;
 
 uint8_t memread(uint16_t a)
 {
@@ -85,15 +83,11 @@ uint8_t inst=memread(reg[p]);
 #if MONITOR==1
  if (monactive==0 && mon_checkbp()==0) return 1;
 #endif 
-#if 0
+#if BIOS==1
  if ((reg[p]&0xFF00)==0xFF00)
   {
-  Serial.print("BIOS: ");
-  print4hex(reg[p]);
-  Serial.println();
-  inst=0;
+    return bios(reg[p]);
   }
-
 #endif
   reg[p]++;
   I=inst>>4;

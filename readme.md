@@ -1,4 +1,4 @@
-1802 UNO v20
+1802 UNO v21
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -123,6 +123,19 @@ Port Summary
 * Port 4 - Switch/Data LED
 * Port 7 - Control port. Set bit 0 to disable serial front panel. Set bit 1 to put address displays under program control (see port 2,3).
 
+
+BIOS
+===
+There is experimental support for a small number of BIOS function when BIOS=1 (see 1802config.h). These BIOS calls are not written in 1802 but are handled by the host.
+
+At present, there are two BIOS functions, and two non-standard support functions.
+* 0xFF3F - Set up SCRT. Put a return address in R6 and do a LBR to this address. On return, P=3 at your return address. R4 will be set up to do an SCRT call and R5 will be set up to do an SCRT return.
+* 0xFF66 - Print the string after the call to the terminal until a zero byte. So to print ABC<CR><LF> you would use the following code:
+     D5 FF 66 41 42 43 0D 0A 00
+
+In addition, the SCRT routines use the non-standard addresses 0xFF01 and 0xFF02. Since this is set up by 0xFF3F, even if they change, you should not notice.
+
+There is an example of using SCRT in the examples directory called BIOS.TXT. Note that when stepping "through" a BIOS call, you will see a bogus instruction fetch, but the operation should complete as intended.
 
 Building
 ===
@@ -280,7 +293,7 @@ Enter Monitor mode with the \ key while in front panel mode. You do NOT have to 
 
 Upper/lower case does not matter. Note that backspace sort of works, except on multi-line M commands. Even then, it works, just with a twist (see the M command for more). You can use Escape to abort a line. Esc will also abort a long memory dump.
 
-You can #define MONITOR 0 in main.h if you want to disable it.
+You can #define MONITOR 0 in 1802config.h if you want to disable it.
 
 
 Commands 
@@ -357,16 +370,15 @@ Note that there is a limit on line size (currently 31 characters).
 However, if you start a new line (you get a colon prompt), you will not be able to backspace past the current byte:
 
     M 400=
-    : 20 30 40
-    : 50 60 70;
+    400: 20 30 40
+    403: 50 60 70;
 
-Backing up while entering 30 can only delete the 30 and not the 20. Also, instead of backing up you can just keep going 
-as in:
+Backing up while entering 30 can only delete the 30 and not the 20. Also, instead of backing up you can just keep going as in:
 
     :M 400=
-    : 200 300 400;
+    400: 200 300 400;
 
-All 3 bytes will then be zero.
+All 3 bytes will then be zero. Note that if you start entering a byte, you will overwrite that byte even if you backspace it out (it will write as a zero).
 
 About the dot command
 ---

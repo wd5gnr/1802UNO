@@ -1,6 +1,9 @@
 // Modified from http://www.elf-emulation.com/software/rctops.html
 // THe original was in Popular Electronics
 
+uint16_t rombase=0x8000;
+
+
 const uint8_t PROGMEM rom[]=
   {
     0x30, 0X3B,   // Jump to end to patch the load of R2 to point to ram

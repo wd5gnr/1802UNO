@@ -29,3 +29,5 @@ can't upload over the serial port (until you power off/on).
 * bcdcount.txt - Count from 00-99 on LEDs.
 
 * disp.hex - Displays AA5591 on the address and data displays
+
+* bios.txt - Print ABC\r\n on the terminal using simulated BIOS calls and SCRT
