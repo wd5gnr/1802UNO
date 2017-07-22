@@ -10,7 +10,7 @@ You have 1K of RAM at 0000 and no interrupts.
 There is a small ROM at 8000
 To set the ROM you must reflash the Arduino
 The various commands to save and read memory only operate on RAM
-You can "LOad" through the ROM but it won't change the contents
+You can "Load" through the ROM but it won't change the contents
 
 You can load ETOPS in rom (see http://www.elf-emulation.com/software/rctops.html and below)
 or the IDIOT/4 monitor in rom (see below)
@@ -20,6 +20,31 @@ To run it put C0 80 00 at location 0 to jump to it. Note it uses RAM at 03FF.
 On power up (but not reset) the first 3 bytes of RAM initialize to C0 80 00.
 
 The file 1802rom.h only includes another file (1802idiot.h, 1802hilo.h, or 1802etops.h) so it is reasonably easy to flip different ROM images around.
+
+General Operation Overview
+===
+Nominally, you can operate the entire device via the built-in keypad and display. It works (at least externally) like a regular ELF. To enter data, select
+Load mode (DA), input hex bytes followed by the In key (+). Pres ST or RS (stop or Reset) to exit load mode.
+
+Pres Go to execute the program at 0000 after reset or from where it left off if stopped. You can use ST or RS here depending of if you want to halt execution or reset.
+
+To examine memory, press memory protect (PC) and then use load mode which will ignore any hex input you provide (just keep pressing + to advance through memory).
+
+Serial Terminal Front Panel
+---
+If you have a serial terminal (e.g., a PC running a terminal program) you can use it in one of three modes. First--the default--is front panel mode. Keys on the terminal map to keys on the keyboard (e.g., G is GO, R is RS). There are also commands for dumping memory, loading memory, etc. Because the terminal can do everything the front panel can, you shouldn't need a front panel to operate 1802UNO. It should run on a plan Arudio Pro Mini or similar.
+
+Serial Terminal Mode
+---
+If you use the | command from front panel mode, the serial terminal will become a normal serial terminal your program can read and will no longer operate as a front panel. This will continue until the Arduino resets (an 1802 reset isn't sufficient) or until a power cycle. This is useful for terminal-oriented programs like IDIOT/4.
+
+Meta Monitor
+---
+While in front panel mode you can also press \ to enter the meta-monitor. This allows you to perform a lot of functions from the terminal. Note that while front panel commands don't work while in this mode, you can send the front panel a command using the "." command (that is, .R is reset, .? dumps memory, etc.).
+
+Loading Programs
+---
+Using the keypad to load programs is a bit tedious. If you have a program already entered you can save it to EEPROM and later restore it using the keyboard or the terminal. In addition, the terminal can read a simplified hex format or Intel hex format files. It can also dump memory in both of those formats. To save RAM to EEPROM hold down SST for one second or use the > terminal command. Reverse the operation by holding down AD for 1 second or using the < command.
 
 Keyboard
 ===
@@ -34,7 +59,7 @@ The keyboard is mapped like this:
 * PC - Protect memory toggle so that load mode displays data
 * SST - Single step
 * 0-F - Build up hex number. Accumulates 16-bits although you can only see the lower 8. For load mode, the lower 8 is used. For AD all 16-bits are used.
-* SST - Hold down for one second to save RAM to EEPROM
+* DA - Hold down for one second to save RAM to EEPROM
 * AD - Hold down for one second when not running and not memory protected to read RAM from EEPROM
 
 
@@ -49,8 +74,8 @@ On a terminal (9600 8 N 1) you can use normal keys like 0-9 A-F a-f and these ad
 * GO=G
 * PC=P
 * SST=/
-* DA (1 sec) <
-* AD (1 sec) >
+* DA (1 sec)=<
+* AD (1 sec)=>
 
 Note: + does not act as Enter from the terminal; use $ to toggle EF4 instead.
 
@@ -126,9 +151,9 @@ Port Summary
 
 BIOS
 ===
-There is experimental support for a small number of BIOS function when BIOS=1 (see 1802config.h). These BIOS calls are not written in 1802 but are handled by the host.
+There is experimental support for a small number of BIOS function when BIOS=1 (see 1802config.h). These BIOS calls are not written in 1802 but are handled by the Arduino host. The baud rate is fixed so any BIOS function that in the "standard" BIOS that takes a baud rate value will ignore it. 
 
-At present, there are two BIOS functions, and two non-standard support functions.
+At present, there are two BIOS functions tested, and two non-standard support functions.
 * 0xFF3F - Set up SCRT. Put a return address in R6 and do a LBR to this address. On return, P=3 at your return address. R4 will be set up to do an SCRT call and R5 will be set up to do an SCRT return.
 * 0xFF66 - Print the string after the call to the terminal until a zero byte. So to print ABC<CR><LF> you would use the following code:
      D5 FF 66 41 42 43 0D 0A 00
@@ -136,6 +161,22 @@ At present, there are two BIOS functions, and two non-standard support functions
 In addition, the SCRT routines use the non-standard addresses 0xFF01 and 0xFF02. Since this is set up by 0xFF3F, even if they change, you should not notice.
 
 There is an example of using SCRT in the examples directory called BIOS.TXT. Note that when stepping "through" a BIOS call, you will see a bogus instruction fetch, but the operation should complete as intended.
+
+There are a few other BIOS calls untested. Please report issues or success using these calls:
+
+* 0xFF2d - Baud rate call, does nothing since we do not support multiple baud rates
+* 0xFF03 - Send character in D to terminal and translate 0xC to 0x1B.
+* 0xFF43 - Send character in D to terminal (no translation)
+* 0xFF06 - Read terminal character into D
+* 0xFF09 - Print null-terminated string pointed to by RF
+* 0xFF81 - Return capability word in RF (we return 8 for supporting a UART)
+* 0xFF0F - Read up to 255 characters (plus terminating null) from terminal. Buffer in RF (unchanged)
+* 0xFF69 - Same as 0xFF0F but count is in RC
+* 0xFF12 - Compare string @RF with string @RD, D=00 for equal, D=FF for < and D=01 for > (BUGGED: DOES NOT WORK IF EITHER STRING IS IN ROM--will fix)
+* 0xFF15 - String pointed to by RF, set RF to first non space character
+* 0xFF18 - Copy string from [RF] to [RD]
+* 0xFF1B - Copy bytes from [RF] to [RD] for count RC
+
 
 Building
 ===

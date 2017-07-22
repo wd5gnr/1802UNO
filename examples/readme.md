@@ -1,8 +1,6 @@
-Send these files over the serial port (9600 8 1 N) then reset and go.
+Send these files over the serial port (9600 8 1 N) then reset and go. Files with a .txt extension are in 1802UNO format (the @ sign in the front causes them to load, so just send them to the 1802UNO while in front panel mode). The files that end in .hex are in Intel hex file format. Use the X command in front panel mode to load them.
 
-Note: To use the terminal as an ASCII input device you need to send |
-one time and then it will stay in force until you reboot the device
-(not an 1802 reset).
+Note: To use the terminal as an ASCII input device you need to send | one time and then it will stay in force until you reboot the device (not an 1802 reset).
 
 You can also turn this on programtically (and off, too) using the control
 port. However, note that once you turn the terminal to this mode, you
