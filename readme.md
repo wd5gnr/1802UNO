@@ -138,7 +138,7 @@ Future Plans
 
 Hackaday
 ===
-Yes, there will be a Hackaday post about this.
+http://hackaday.com/2017/07/25/kim-1-to-cosmac-elf-conversion-sort-of/
 
 Port Summary
 ===
@@ -300,7 +300,7 @@ The original instructions have to be modified a bit. Be sure and hold the
 \+ key down long enough for the Q LED to light when guessing. The blink blocks
 so it is easy to press it and release before the 1802 "looks" at it.
 
-In addition, the LEDs don't "bink" because they are 7 segment. What you will see is for a high you will see 00/F0 for a low you will see 00/0F and when the nubmer is correct you will see it blink between 00 and the number.
+In addition, the LEDs don't "bink" because they are 7 segment. What you will see is for a high you will see 00/F0 for a low you will see 00/0F and when the number is correct you will see it blink between 00 and the number.
 
 Once the game is over and it shows you the # of guesses you made, you'll have to press RESET and run for a new game.
 
