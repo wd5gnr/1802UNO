@@ -35,7 +35,7 @@ uint8_t mp=0;  // memory protect
 // So on power up, we go to ROM. If you mess that up, that's on you ;)
 uint8_t ram[MAXMEM+1]={0xC0, rombase>>8, rombase&0xFF}; 		// main 1KB RAM		 0x000-0x3FF
 // ROM
-#include <1802rom.h>
+#include "1802rom.h"
 
 uint8_t memread(uint16_t a)
 {
