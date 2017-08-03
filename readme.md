@@ -1,7 +1,14 @@
-1802 UNO v21
+1802 UNO v22
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
+
+What's New
+===
+v22:
+* Faster execution due to Oscar's patch (set NICE_VALUE in 1802config.h)
+* You can create multiple non-overlapping ROMs (see 1802rom.h for details)
+* All 3 demos now in ROM (Idiot at 8000, Etops at 9000, and Hi Lo at C000)
 
 
 Configuration
@@ -12,14 +19,15 @@ To set the ROM you must reflash the Arduino
 The various commands to save and read memory only operate on RAM
 You can "Load" through the ROM but it won't change the contents
 
-You can load ETOPS in rom (see http://www.elf-emulation.com/software/rctops.html and below)
-or the IDIOT/4 monitor in rom (see below)
-By default a HiLo game is in ROM (see below)
+There are three demo ROMs:
+* IDIOT/4 at location 8000 (see below)
+* ETOPS monitor (see http://www.elf-emulation.com/software/rctops.html and below) at location 9000 (see below)
+* A HiLo game is at C000 (see below)
 
-To run it put C0 80 00 at location 0 to jump to it. Note it uses RAM at 03FF.
+To run it put C0 XX 00 at location 0 to jump to it (where XX is 80 for for IDIOT/4, 90 for ETOPS, and C0 for Hi lo). 
 On power up (but not reset) the first 3 bytes of RAM initialize to C0 80 00.
 
-The file 1802rom.h only includes another file (1802idiot.h, 1802hilo.h, or 1802etops.h) so it is reasonably easy to flip different ROM images around.
+The file 1802rom.h only includes other files (1802idiot.h, 1802hilo.h, or 1802etops.h) so it is reasonably easy to flip different ROM images around and change where they load. Note that 1802 code is not always relocatable, so be sure you put ROM code where it will run correctly.
 
 General Operation Overview
 ===

@@ -31,9 +31,9 @@ Patched for ROM by Al Williams
 
 */
 
-uint16_t rombase=0x8000;
+uint16_t ROM_BASEVAR=ROM_BASE;
 
-const uint8_t PROGMEM rom[]=
+const uint8_t PROGMEM ROM_ARRAY[]=
   {
     0x90,	
     0x30,

@@ -13,7 +13,7 @@
 #include "main.h"
 #include "1802.h"
 
-#define VERSION "1802UNOv21"
+#define VERSION "1802UNOv22"
 
 #define SERIAL_ESCAPE '|'  // turn terminal input into real terminal input
 
@@ -182,7 +182,16 @@ void driveLEDs()
       digitalWrite(aCols[0],dp[ledNo]==0);
 
       digitalWrite(ledSelect[ledNo], HIGH); // Light this LED
-      delay(2);
+
+     uint8_t is;
+#if NICE_VALUE == 0
+     delay(2);
+#else     
+      for (is=0;is<NICE_VALUE;is++)
+        exec1802(0);   // do some 1802 emulation whilst the LED is lit up... we should take about 2ms here before going on...
+#endif      
+
+
       digitalWrite(ledSelect[ledNo], LOW); // unLight this LED
     }
 } // end of function

@@ -33,22 +33,30 @@ uint8_t mp=0;  // memory protect
 // RAM
 // Note: Hardcode a jump to ROM but don't ever set it again
 // So on power up, we go to ROM. If you mess that up, that's on you ;)
-uint8_t ram[MAXMEM+1]={0xC0, rombase>>8, rombase&0xFF}; 		// main 1KB RAM		 0x000-0x3FF
+uint8_t ram[MAXMEM+1]={0xC0, rombase[0]>>8, rombase[0]&0xFF}; 		// main 1KB RAM		 0x000-0x3FF
 // ROM
 #include "1802rom.h"
 
+
+
 uint8_t memread(uint16_t a)
 {
-  if (a<rombase)
+  unsigned int irom;
+  
+  if (a<rombase[0])
     return ram[a&MAXMEM];
-  else
-    return pgm_read_byte_near(rom+(a-rombase));
+  for (irom=0;irom<sizeof(roms)/sizeof(roms[0]);irom++)
+    {
+      if (a>=rombase[irom]&&a<rombase[irom]+romsize[irom])
+	return pgm_read_byte_near(roms[irom]+(a-rombase[irom]));
+    }
+  return 0;
 }
 
 
 void memwrite(uint16_t a, uint8_t d)
 {
-  if (a>=rombase || mp==1) return;
+  if (a>=rombase[0] || mp==1) return;
   ram[a&MAXMEM]=d;
 }
 

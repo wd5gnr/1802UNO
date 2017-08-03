@@ -240,7 +240,7 @@ int exec1802(int ch)
 
   // Ok now we can see what state we are in
   // if loading (or displaying if mp==1)
-  if (loadstate==1 && ef4==1)  {  if (mp||caddress>=rombase) data=memread(caddress); else ram[caddress&MAXMEM]=data;  loadstate=2;  }
+  if (loadstate==1 && ef4==1)  {  if (mp||caddress>=rombase[0]) data=memread(caddress); else ram[caddress&MAXMEM]=data;  loadstate=2;  }
   // state 2 waits for EF4 release
   if (loadstate==2 && ef4==0) { loadstate=1; data=memread(++caddress); }
   // run if required

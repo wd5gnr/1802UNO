@@ -23,8 +23,22 @@ extern uint8_t ef4term;
 extern uint8_t mp;  // memory protect
 // RAM
 extern uint8_t ram[MAXMEM+1]; 		// main 1KB RAM		 0x000-0x3FF
-extern const uint8_t rom[];
-extern uint16_t rombase;
+
+// You can have 3 banks of ROMs (easy to add more)
+// This bank of ROM must be at lowest address of all ROMs 
+extern const uint8_t rom0[];
+extern uint16_t rombase0;
+
+extern const uint8_t rom1[];
+extern uint16_t rombase1;
+
+extern const uint8_t rom2[];
+extern uint16_t rombase2;
+
+extern uint8_t const *roms[];
+extern uint16_t rombase[];
+
+
 extern uint8_t adhigh;  // high address display for I/O
 extern uint8_t adlow;  // low address display for I/O
 extern int addisp;

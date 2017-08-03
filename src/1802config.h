@@ -31,4 +31,4 @@
 // How many cycles between display refreshes?
 // Higher makes the simulation faster, but the screen more blinky
 #define DISPLAY_DIVISOR 32  // number of ticks between display refresh
-
+#define NICE_VALUE 40 // number of times to execute instructions while lighting LEDs (0 to disable)
