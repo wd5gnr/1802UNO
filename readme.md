@@ -1,3 +1,19 @@
+UNO1802 with Pixe Graphics
+===
+This is the original 1802 UNO with Oscar's Pixie code. Oscar has it set
+to compile with the Arduino IDE.
+
+See http://obsolescenceguaranteed.blogspot.ch/2017/08/the-uno1802-cosmac-elf-for-15-in-parts.html
+
+Oscar's original code is here:
+https://drive.google.com/open?id=0B_jM3_1AFMbMeVVlMHpIYlplUzQ
+
+There are some additional files that may or may not be necessary, but I just put all the files in this repository.
+
+
+What follows is the original readme file:
+
+
 1802 UNO v22
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
