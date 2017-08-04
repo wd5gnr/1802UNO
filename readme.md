@@ -412,6 +412,19 @@ Examples
     I 2 - Show input from N=2
     O 1 41 - Write 41 to output N=2 (this will echo on terminal)
 
+
+
+For fun while playing HiLo, try this (from front panel mode; if already in the metamonitor, you can skip the \ input):
+
+    \
+    O 7 2
+    o 2 14
+    o 3 07
+    c
+
+Now look at your 1802 UNO upside down!
+
+
 Notes about the M command
 ---
 You can enter new bytes on one line:
@@ -432,7 +445,7 @@ Backing up while entering 30 can only delete the 30 and not the 20. Also, instea
 
 All 3 bytes will then be zero. Note that if you start entering a byte, you will overwrite that byte even if you backspace it out (it will write as a zero).
 
-About the dot command
+About the Dot Command
 ---
 The dot command is pretty handy. For example:
 
@@ -449,16 +462,6 @@ For example, try this:
 I 4
 
 You'll see that the input reads 5A, as set.
-
-For fun while playing HiLo, try this (from front panel mode):
-
-    \
-    O 7 2
-    o 2 14
-    o 3 07
-    c
-
-Now look at your 1802 UNO upside down!
 
 
 Hard Breakpoint
