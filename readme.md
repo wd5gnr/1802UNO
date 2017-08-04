@@ -465,3 +465,8 @@ Hard Breakpoint
 ---
 Code a 68 (an illegal 1802 instruction) to force a jump to the built-in
 monitor.
+
+Video (From Osbolescence Guaranteed)
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/1BrtXRscLn8/0.jpg)](http://www.youtube.com/watch?v=1BrtXRscLn8 "UNO1802 with Pixie OLED display")
+
+Note: This video shows the "Pixie" branch code with the OLED but the base code is the same as this branch.
