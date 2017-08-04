@@ -145,7 +145,7 @@ Known Problems
 
 Future Plans
 ===
-* All done for now.
+* All done for now. (However, see Branch Pixie for Oscar's OLED 1861 Pixie chip simulation)
 
 Hackaday
 ===
