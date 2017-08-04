@@ -129,11 +129,14 @@ You can also read and write Intel hex files with X and Y commands. Note that Y w
 LEDs
 ===
 
-The far left decimal point is the Q LED.
-The next is lit for load state.
-The next is lit for run state.
-The next is list when EF4 is active.
-The decimal point between the two digits of the data display indicate memory protect.
+    +--------+--------+--------+---------+---+---------+-------+
+    | LED1   | LED2   | LED3   |  LED4   |   |  LED5   |  LED6 |
+    +--------+--------+--------+---------+---+---------+-------+
+    |    . Q |  . LOAD|  . RUN |   . EF4 |   |   . PROT|       |
+    |        |   STATE|  STATE |         |   |     MEM |       |
+    +--------+--------+--------+---------+---+---------+-------+
+
+(Thanks for the graphic Oscar)
 
 Known Problems
 ===
