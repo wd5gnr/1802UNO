@@ -40,7 +40,7 @@ To examine memory, press memory protect (PC) and then use load mode which will i
 
 Serial Terminal Front Panel
 ---
-If you have a serial terminal (e.g., a PC running a terminal program) you can use it in one of three modes. First--the default--is front panel mode. Keys on the terminal map to keys on the keyboard (e.g., G is GO, R is RS). There are also commands for dumping memory, loading memory, etc. Because the terminal can do everything the front panel can, you shouldn't need a front panel to operate 1802UNO. It should run on a plan Arudio Pro Mini or similar.
+If you have a serial terminal (e.g., a PC running a terminal program) you can use it in one of three modes. First--the default--is front panel mode. Keys on the terminal map to keys on the keyboard (e.g., G is GO, R is RS). There are also commands for dumping memory, loading memory, etc. Because the terminal can do everything the front panel can, you shouldn't need a front panel to operate 1802UNO. It should run on a plain Arduino Pro Mini or similar.
 
 Serial Terminal Mode
 ---
