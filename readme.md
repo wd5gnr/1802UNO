@@ -1,4 +1,4 @@
-1802 UNO v22
+1802 UNO v23
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
@@ -9,6 +9,7 @@ v23:
 * Fixed instruction coding for ADCI
 * Fixed corner case for branch instructions
 * Altered BIOS to allow ROM strings in FF12 (lightly tested)
+
 v22:
 * Faster execution due to Oscar's patch (set NICE_VALUE in 1802config.h)
 * You can create multiple non-overlapping ROMs (see 1802rom.h for details)
