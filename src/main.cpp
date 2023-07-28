@@ -1,7 +1,7 @@
 // This is mostly Oscar's original KIM UNO code
 // Modified by Al Williams for use as an 1802
 // For the most part I just hacked away the parts specific to the KIM
-// I did add code to theh display part to take care of the decimal points
+// I did add code to the display part to take care of the decimal points
 // in the hex out code, and added a few defines and a header.
 // But for the most part, all of this code is straight out of the KIM Uno.
 
@@ -13,7 +13,7 @@
 #include "main.h"
 #include "1802.h"
 
-#define VERSION "1802UNOv22"
+#define VERSION "1802UNOv23"
 
 #define SERIAL_ESCAPE '|'  // turn terminal input into real terminal input
 

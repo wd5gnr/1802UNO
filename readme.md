@@ -5,6 +5,10 @@ See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for mo
 
 What's New
 ===
+v23:
+* Fixed instruction coding for ADCI
+* Fixed corner case for branch instructions
+* Altered BIOS to allow ROM strings in FF12 (lightly tested)
 v22:
 * Faster execution due to Oscar's patch (set NICE_VALUE in 1802config.h)
 * You can create multiple non-overlapping ROMs (see 1802rom.h for details)
@@ -140,7 +144,8 @@ LEDs
 
 Known Problems
 ===
-* There is no telling how many instruction miscodings I've made. Of course, that's not technically a "known" problem.
+* There were two issues in v22 that are now fixed (see above)
+* The BIOS is lightly tested and may not have all the same private semantics as compatible BIOS
 
 
 Future Plans
@@ -183,7 +188,7 @@ There are a few other BIOS calls untested. Please report issues or success using
 * 0xFF81 - Return capability word in RF (we return 8 for supporting a UART)
 * 0xFF0F - Read up to 255 characters (plus terminating null) from terminal. Buffer in RF (unchanged)
 * 0xFF69 - Same as 0xFF0F but count is in RC
-* 0xFF12 - Compare string @RF with string @RD, D=00 for equal, D=FF for < and D=01 for > (BUGGED: DOES NOT WORK IF EITHER STRING IS IN ROM--will fix)
+* 0xFF12 - Compare string @RF with string @RD, D=00 for equal, D=FF for < and D=01 for > 
 * 0xFF15 - String pointed to by RF, set RF to first non space character
 * 0xFF18 - Copy string from [RF] to [RD]
 * 0xFF1B - Copy bytes from [RF] to [RD] for count RC

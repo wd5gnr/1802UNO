@@ -59,7 +59,11 @@ uint16_t romsize[]=
     sizeof(rom1)/sizeof(rom1[0]),    
     sizeof(rom2)/sizeof(rom2[0])
   };
-    
+
+
+// Assume everything starting at rombase[0] is a ROM
+#define ISROM(a) ((a)>=rombase[0])
+
 
 #endif
 

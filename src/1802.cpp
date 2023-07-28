@@ -33,7 +33,7 @@ uint8_t mp=0;  // memory protect
 // RAM
 // Note: Hardcode a jump to ROM but don't ever set it again
 // So on power up, we go to ROM. If you mess that up, that's on you ;)
-uint8_t ram[MAXMEM+1]={0xC0, rombase[0]>>8, rombase[0]&0xFF}; 		// main 1KB RAM		 0x000-0x3FF
+uint8_t ram[MAXMEM+1]={0xC0, (uint8_t)(rombase[0]>>8), (uint8_t)(rombase[0]&0xFF)}; 		// main 1KB RAM		 0x000-0x3FF
 // ROM
 #include "1802rom.h"
 
@@ -43,7 +43,7 @@ uint8_t memread(uint16_t a)
 {
   unsigned int irom;
   
-  if (a<rombase[0])
+  if (!ISROM(a))
     return ram[a&MAXMEM];
   for (irom=0;irom<sizeof(roms)/sizeof(roms[0]);irom++)
     {
@@ -56,7 +56,7 @@ uint8_t memread(uint16_t a)
 
 void memwrite(uint16_t a, uint8_t d)
 {
-  if (a>=rombase[0] || mp==1) return;
+  if (ISROM(a) || mp==1) return;
   ram[a&MAXMEM]=d;
 }
 
@@ -126,9 +126,20 @@ uint8_t inst=memread(reg[p]);
     break;
     case 3:
     // handle branches
+      // There are two odd cases to consider
+      // 00FF: 31
+      // 0100: 80  <-- goes to 0101 or 0180
+
+      // and
+
+      // 00FE: 31
+      // 00FF: 80   <--- goes to 0100 or 0080!
+     
     {
       uint16_t tpc=memread(reg[p]);
-      uint16_t nxt=++reg[p];
+      uint16_t nxt=(++reg[p])&0xFF;
+      int corner=0;
+      if (nxt==0) corner=1;
       switch (N)
       {
         case 0:
@@ -167,6 +178,11 @@ uint8_t inst=memread(reg[p]);
         if (d!=0) nxt=tpc;
         break;
       }
+      if (corner==1 && nxt==tpc)
+	{
+	  // corner case
+	  reg[p]=reg[p]-1;
+	}
       reg[p]=(reg[p]&0xFF00)|nxt;
       break;
     }
@@ -258,7 +274,7 @@ uint8_t inst=memread(reg[p]);
         q=N&1;
         break;
       case 0xc:
-	work=d+memread(reg[p]);
+	work=d+memread(reg[p])+df;  // fixed thanks to sjaturner
       if (work&0x100) df=1; else df=0;
       d=work;
       reg[p]++;

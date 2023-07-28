@@ -137,10 +137,26 @@ int bios(uint16_t fn)
 // NOTE MUST REDO THIS ONE... DOES NOT WORK IN ROM!
       case 0xFF12: 
 	{
+#if 0
 	  char *p1=ram+reg[0xf];
 	  char *p2=ram+reg[0xd];
 	  d=strcmp(p1,p2);
 	  p=5;
+#else
+	  char p1,p2;
+	  d=0;
+	  do
+	    {
+	      p1=memread(reg[0xf]);
+	      p2=memread(reg[0xd]);
+	      if (p1==p2 && p1==0) break;  // strings equal
+	      if (p1==0 || p1<p2 ) { d=0xFF; break; }  // I think I got these right
+	      if (p2==0 || p2>p1 ) { d=1; break; }
+	      reg[0xf]=reg[0xf]+1;
+	      reg[0xd]=reg[0xd]+1;
+	    } while (1); 
+	  p=5;
+#endif	  
 	}
 	
 	break;
