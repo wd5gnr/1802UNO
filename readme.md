@@ -1,4 +1,4 @@
-UNO1802 with Pixe Graphics
+UNO1802 with Pixie Graphics
 ===
 This is the original 1802 UNO with Oscar's Pixie code. Oscar has it set
 to compile with the Arduino IDE.
