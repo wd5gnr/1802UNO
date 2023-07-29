@@ -120,7 +120,9 @@ uint8_t inst=memread(reg[p]);
     // handle branches
     {
       uint16_t tpc=memread(reg[p]);
-      uint16_t nxt=++reg[p];
+      uint16_t nxt=(++reg[p])&0xFF;
+      int corner=0;
+      if (nxt==0) corner=1;
       switch (N)
       {
         case 0:
@@ -159,6 +161,11 @@ uint8_t inst=memread(reg[p]);
         if (d!=0) nxt=tpc;
         break;
       }
+      if (corner==1 && nxt==tpc)
+	{
+	  // corner case
+	  reg[p]=reg[p]-1;
+	}
       reg[p]=(reg[p]&0xFF00)|nxt;
       break;
     }
@@ -250,7 +257,7 @@ uint8_t inst=memread(reg[p]);
         q=N&1;
         break;
       case 0xc:
-	work=d+memread(reg[p]);
+	work=d+memread(reg[p]+df);
       if (work&0x100) df=1; else df=0;
       d=work;
       reg[p]++;
