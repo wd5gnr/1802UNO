@@ -3,8 +3,23 @@
 #include "main.h" // need serialread
 // Input from any port gives you the data register
 // except port 1 is serial input
+
+#ifdef OLED
+void pixieon()
+{
+  pixie_enable=1;
+}
+#endif
+
 uint8_t input(uint8_t port)
 {
+#ifdef OLED
+  if (port==PIXIEPORT)
+    {
+      pixieon();
+      return 0;
+    }
+#endif  
   if (port==SER_INP)
   {
     int rv=Serialread();
@@ -17,6 +32,13 @@ uint8_t input(uint8_t port)
 // Output to any port writes to the data display
 void output(uint8_t port, uint8_t val)
 {
+#ifdef OLED
+  if (port==PIXIEPORT)
+    {
+      pixieon();
+      return;
+    }
+#endif  
   if (port==SER_OUT) Serial.print((char)val);
   else if (port==LED_PORT) data=val;
   else if (port==A0_PORT) adlow=val;

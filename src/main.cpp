@@ -13,7 +13,18 @@
 #include "main.h"
 #include "1802.h"
 
-#define VERSION "1802UNOv24"
+#define VERSION "1802UNOv25"
+
+
+#ifdef OLED
+#include "SSD1306Ascii.h"               
+#include "SSD1306AsciiAvrI2c.h"
+#include "startrek.h" // contains display image
+#define I2C_ADDRESS 0x3C
+SSD1306AsciiAvrI2c oled;
+int pixie_enable=0;
+#endif
+// end of OLED display ----------------------------------
 
 #define SERIAL_ESCAPE '|'  // turn terminal input into real terminal input
 
@@ -73,6 +84,26 @@ uint8_t tick=0;
 
 // Set up everything
 void setup () {
+// OLED display -----------------------------------------
+#ifdef OLED
+  //put the screen bitmap in RAM
+  //maybe not the most elegant place to do this, but practical
+
+  uint8_t ixx;
+  for (ixx=3; ixx<254; ixx++) // we leave first 3 bytes (branch to 0x8000) untouched
+    ram[ixx]= (pgm_read_byte_near (startrek + ixx));
+
+  oled.begin(&Adafruit128x64, I2C_ADDRESS);
+  oled.ssd1306WriteCmd(SSD1306_MEMORYMODE);
+  oled.ssd1306WriteCmd(0x00);  // horizontal mode
+  oled.setFont(font5x7); // OLED fonts are not used - but for future use of a, erm, Super Pixie Terminal Mode?
+  // disable twi module, acks, and twi interrupt
+  oled.clear(); // off by default
+  TWCR &= ~(_BV(TWEN) | _BV(TWIE) | _BV(TWEA)); // stop I2C clock so it does not interfere with KIM Uno use of that pin!    
+#endif
+
+// end of OLED display -----------------------------------------
+
   Serial.begin (9600);
   Serial.println ("Wait");
   setupUno();
@@ -80,6 +111,13 @@ void setup () {
   Serial.print(F(VERSION " Free Memory=")); // just a little check, to avoid running out of RAM!
   Serial.println(freeRam());
 }
+
+#ifdef OLED
+// OLED display -----------------------------------------
+uint8_t l1=0, l2=1; // used within loop to keep track of which part of display is updated
+// end of OLED display -----------------------------------------
+#endif
+
 
 int Serialread(int echo) {
   int curkey;
@@ -99,11 +137,30 @@ void loop()
    else exec1802(curkey);
    curkey=0;
   }
-  if (tick%DISPLAY_DIVISOR==0) scanKeys();   // scan the keyboard
+  if (tick%DISPLAY_DIVISOR==0)
+    {
+      scanKeys();   // scan the keyboard
+    }
   exec1802(curkey);   // process even if 0
   curkey=0;         // clear out keyboard
 // Update display only so often
-  if (tick%DISPLAY_DIVISOR==0) driveLEDs();
+  if (tick%DISPLAY_DIVISOR==0)
+    {
+#ifdef OLED
+    // OLED display -----------------------------------------
+    // enable twi module, acks, and twi interrupt:
+      if (pixie_enable) {
+    TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA); // switch on I2C...
+    oled.paintscreen(l1,l2);  // paint 1/4th of the display
+    l1=l1+2; if (l1==8) l1=0;
+    l2=l2+2; if (l2==9) l2=1;
+    // disable twi module, acks, and twi interrupt
+    TWCR &= ~(_BV(TWEN) | _BV(TWIE) | _BV(TWEA)); // switch off I2C...
+    // end of OLED display -----------------------------------------
+      }
+#endif
+      driveLEDs();
+    }
   tick++;
 }
 
@@ -126,8 +183,8 @@ void setupUno() {
   // --------- initialse for scanning keyboard matrix -----------------
   // set columns to input with pullups
   for (i=0;i<8;i++)
-  {  pinMode(aCols[i], INPUT);           // set pin to input
-     digitalWrite(aCols[i], HIGH);       // turn on pullup resistors
+  {  pinMode(aCols[i], INPUT_PULLUP);           // set pin to input
+    //     digitalWrite(aCols[i], HIGH);       // turn on pullup resistors
   }
   // set rows to output, and set them High to be in Neutral position
   for (i=0;i<3;i++)
@@ -266,8 +323,8 @@ void scanKeys()
   }
   // 1. initialise: set columns to input with pullups
   for (col=0;col<8;col++)
-  {  pinMode(aCols[col], INPUT);           // set pin to input
-     digitalWrite(aCols[col], HIGH);       // turn on pullup resistors
+  {  pinMode(aCols[col], INPUT_PULLUP);           // set pin to input
+    //     digitalWrite(aCols[col], HIGH);       // turn on pullup resistors
   }
   // 2. perform scanning
   noKeysScanned=0;
@@ -275,7 +332,14 @@ void scanKeys()
   for (row=0; row<3; row++)
   { digitalWrite(aRows[row], LOW);       // activate this row
     for (col=0;col<8;col++)
-    { if (digitalRead(aCols[col])==LOW)  // key is pressed
+    {
+#ifdef OLED
+      // noise from SDA (which doubles as col0) needs bit of time to settle down...
+      // otherwise you get incidental cases of a col0 keypress not being read, and thus a 
+      // repeat of that keypress when it gets read in the next sample.
+      if (col==0) delayMicroseconds(200);
+#endif
+      if (digitalRead(aCols[col])==LOW)  // key is pressed
       { keyCode = col+row*8+1;
         if (keyCode==20 && !ef4term) ef4=1; else ef4=0;   // Set EF4 as long as + held down
         if (keyCode!=prevKey)

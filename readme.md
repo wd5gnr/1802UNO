@@ -1,10 +1,16 @@
-1802 UNO v24
+1802 UNO v25
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
 
 What's New
 ===
+V25:
+* Early integration of OSCAR's PIXIE code -- must define OLED in 1802config.h to enable. This isn't really an 1861
+  because there is no interrupt or EF1 output. It just dumps things starting at the location in R(0) from time to time.
+  However, that works ok. If you don't have the OLED you MUST NOT define OLED. If you do have it, you should.
+  Note that the display is off until you do input or output to I/O 1 (this relocates the serial port to I/O 7, by the way).
+  Once on, it stays on (unlike the real thing).  We may add a simulated interrupt and EF input if there is interest, but otherwise, this is it...
 V24:
 * Improved BIOS
 * Minor monitor fixes

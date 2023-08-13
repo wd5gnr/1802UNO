@@ -23,7 +23,7 @@ int Serialread(int echo=1);
 #define KEY_SST '/'
 
 extern char threeHex[3][2];
-
+extern int pixie_enable;
 
 
 #endif
