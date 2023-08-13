@@ -484,3 +484,5 @@ Video (From Osbolescence Guaranteed)
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/1BrtXRscLn8/0.jpg)](http://www.youtube.com/watch?v=1BrtXRscLn8 "UNO1802 with Pixie OLED display")
 
 Note: This video shows the "Pixie" branch code with the OLED but the base code is the same as this branch.
+
+If you are having trouble with using the serial port, this might help: https://youtu.be/lVVFwcWDBJQ
