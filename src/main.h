@@ -12,6 +12,7 @@ void driveLEDs(void);
 void setaddress(uint16_t a);
 void setdata(uint8_t d);
 void setdp(int pos, int state);
+int Serialread(int echo=1); 
 
 #define KEY_RS 'R'
 #define KEY_AD '='

@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include "1802.h"
+#include "main.h" // need serialread
 // Input from any port gives you the data register
 // except port 1 is serial input
 uint8_t input(uint8_t port)
 {
   if (port==SER_INP)
   {
-    int rv=Serial.read();
+    int rv=Serialread();
     if (rv==-1) rv=0;
     return rv;
   }

@@ -1,10 +1,13 @@
-1802 UNO v23
+1802 UNO v24
 ===
 Starting with Oscar's KIM-UNO code, I changed out the 6502 for an 1802.
 See: <http://obsolescence.wixsite.com/obsolescence/kim-uno-summary-c1uuh> for more details.
 
 What's New
 ===
+V24:
+* Improved BIOS
+* Minor monitor fixes
 v23:
 * Fixed instruction coding for ADCI
 * Fixed corner case for branch instructions

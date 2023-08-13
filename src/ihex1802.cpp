@@ -7,7 +7,7 @@
 int ihex1802::getch(void)
 {
   int c;
-  while ((c=Serial.read())==-1);
+  while ((c=Serialread())==-1);
   return c;
 }
 

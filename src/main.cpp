@@ -13,7 +13,7 @@
 #include "main.h"
 #include "1802.h"
 
-#define VERSION "1802UNOv23"
+#define VERSION "1802UNOv24"
 
 #define SERIAL_ESCAPE '|'  // turn terminal input into real terminal input
 
@@ -81,6 +81,12 @@ void setup () {
   Serial.println(freeRam());
 }
 
+int Serialread(int echo) {
+  int curkey;
+  curkey=Serial.read();
+  if (curkey>0 && echo) Serial.print((char)curkey);
+  return curkey;
+}
 
 // main loop
 void loop()

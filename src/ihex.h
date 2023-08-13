@@ -1,6 +1,7 @@
 #ifndef __IHEX_H
 #define __IHEX_H
 #include <stdint.h>
+#include "main.h" // need Serialread
 
 class ihexread
 {

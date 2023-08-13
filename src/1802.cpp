@@ -102,11 +102,17 @@ uint8_t inst=memread(reg[p]);
   N=inst&0xF;
   if (tracemode)
   {
-    print4hex(reg[p]-1);
+    print4hex(reg[p] - 1);
     Serial.print(':');
     print2hex(inst);
     Serial.print(" D=");
-    print2hex(d);
+    print2hex(d);  
+    Serial.print(" P=");
+    print2hex(p);
+    Serial.print(" X=");
+    print2hex(x);
+    Serial.print(" R[x]=");
+    print2hex(reg[x]);
     Serial.println("");
   }
   if (inst==0)  // op code 00 causes simulation to stop
