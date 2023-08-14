@@ -1,0 +1,77 @@
+
+// ---------------------------------------------------------------------------------------
+// Morse code binary tree table (dichotomic search table)
+// see https://raronoff.wordpress.com/2010/12/16/morse-endecoder/ (note: different table!)
+// ITU with most punctuation (but without non-english characters - for now)
+
+#define MORSETABLELENGTH 128
+const char morseTable[] PROGMEM = 
+  " ETIANMSURWDKGOHVF*L*PJBXCYZQ!*54*3***2&*+****16=/***(*7***8*90*"
+  "***********?_****\"**.****@***'**-********;!*)*****,****:*******\0";
+
+char morseSignalString2[7];// Morse buffer for 1 character as ASCII string of dots and dashes
+int encodeMorse(char encodeMorseChar);
+char decodeMorse(void);
+// ---------------------------------------------------------------------------------------
+
+int encodeMorse(char encodeMorseChar)
+{  
+  int p;
+  int pNode; // parent node
+  int morseSignals=0;           // nr of morse signals to send in one morse character
+  char morseSignalString[7];  // Morse signal for one character (right-to-left inverted!)
+
+  // change to capital letter if not
+  //  if (encodeMorseChar > 96) encodeMorseChar -= 32;
+
+  // Scan for the character to send in the Morse table
+  for (p=0; p<MORSETABLELENGTH+1; p++) 
+    if (pgm_read_byte_near(morseTable + p) == encodeMorseChar) break;
+
+  if (p >= MORSETABLELENGTH) p = 0; // not found, but send a space instead
+
+  // Reverse binary tree path tracing
+  if (p > 0)
+  {
+    // build the morse signal (backwards morse signal string from last signal to first)
+    pNode = p;
+    while (pNode > 0)
+    {
+      if ( (pNode & 0x0001) == 1)
+        morseSignalString[morseSignals++] = '.';
+      else
+        morseSignalString[morseSignals++] = '-';
+      // Find parent node
+      pNode = int((pNode-1)/2);
+    }
+  } else { // Top of Morse tree - Add the top space character
+    // cheating a little; a wordspace for a "morse signal"
+    morseSignalString[morseSignals++] = ' ';
+  }
+  morseSignalString[morseSignals] = '\0';
+
+  // morseSignalString is reversed, fix it
+  p=0;
+  do {
+    morseSignalString2[p++]=morseSignalString[--morseSignals];
+  } while (morseSignals>=0);
+  morseSignalString2[--p]='\0';
+}
+
+  
+char decodeMorse(void)
+{
+  int i=0, morseTablePointer = 0;
+  
+  // start tree search
+  while (morseSignalString2[i]!='\0')
+  {
+    morseTablePointer *= 2;  // go one level down the tree
+    if (morseSignalString2[i]=='.') 
+      morseTablePointer++; // point to node for a dot
+    else if (morseSignalString2[i]=='-') 
+      morseTablePointer+=2; // point to node for a dash
+    i++;
+  }
+  return (pgm_read_byte_near(morseTable + morseTablePointer));
+}

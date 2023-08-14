@@ -182,13 +182,13 @@ uint16_t readhexbuf(int *term, uint16_t def = 0xFFFF) {
 BP bp[16];
 
 void dispbp(int bpn) {
-  Serial.print("\r\nBP");
+  Serial.print(F("\r\nBP"));
   Serial.print(bpn, HEX);
-  Serial.print(": ");
-  if (bp[bpn].type == 1) Serial.print("@");
-  if (bp[bpn].type == 2) Serial.print("P");
-  if (bp[bpn].type == 3) Serial.print("I");
-  if (bp[bpn].type == 0) Serial.print(" DISABLED");
+  Serial.print(F(": "));
+  if (bp[bpn].type == 1) Serial.print(F("@"));
+  if (bp[bpn].type == 2) Serial.print(F("P"));
+  if (bp[bpn].type == 3) Serial.print(F("I"));
+  if (bp[bpn].type == 0) Serial.print(F(" DISABLED"));
   else print4hex(bp[bpn].target);
 }
 
@@ -197,9 +197,9 @@ int nobreak;
 
 void mon_status(void) {
   print4hex(reg[p]);
-  Serial.print(": ");
+  Serial.print(F(": "));
   print2hex(memread(reg[p]));
-  Serial.print(" D=");
+  Serial.print(F(" D="));
   print2hex(d);
   Serial.println();
 }
@@ -217,20 +217,33 @@ int mon_checkbp(void) {
     else if (bp[i].type == 3 && bp[i].target == memread(reg[p])) mon = 1;
   }
   if (mon) {
-    Serial.println("\nBreak");
+    Serial.println(F("\nBreak"));
     mon_status();
     return monitor();
   }
   return 1;
 }
 
-
+// dump printable characters
+static void adump(unsigned a)
+{
+  int z;
+  Serial.print(F("  "));
+  for (z = 0; z < 16; z++)
+  {
+    char b = memread(a + z);
+    if (b >= ' ')
+      Serial.print(b);
+    else
+      Serial.print('.');
+  }
+}
 
 int monitor(void) {
   int noarg;
   monactive = 1;
   while (1) {
-    Serial.print("\r\n>");
+    Serial.print(F("\r\n>"));
     cmd = readline(&terminate);
     if (terminate == 0x1b) continue;
     if (!strchr("RMGBIOXQCN?.", cmd)) {
@@ -302,31 +315,39 @@ int monitor(void) {
       case 'R':
         if (noarg) {
           int i;
-          for (i = 0; i <= 15; i += 2) {
-            Serial.print("R");
+          for (i = 0; i <= 15; i += 4) {
+            Serial.print(F("R"));
             Serial.print(i, HEX);
             Serial.print(':');
             print4hex(reg[i]);
-            Serial.print("\tR");
+            Serial.print(F("\tR"));
             Serial.print(i + 1, HEX);
             Serial.print(':');
             print4hex(reg[i + 1]);
+            Serial.print(F("\tR"));
+            Serial.print(i + 2, HEX);
+            Serial.print(':');
+            print4hex(reg[i + 2]);
+            Serial.print(F("\tR"));
+            Serial.print(i + 3, HEX);
+            Serial.print(':');
+            print4hex(reg[i + 3]);
             Serial.println();
           }
-          Serial.print("(10) X:");
+          Serial.print(F("(10) X:"));
           Serial.print(x, HEX);
-          Serial.print("\t(11) P:");
+          Serial.print(F("\t(11) P:"));
           Serial.println(p, HEX);
-          Serial.print("(12) D:");
+          Serial.print(F("(12) D:"));
           print2hex(d);
-          Serial.print("\t(13) DF:");
+          Serial.print(F("\t(13) DF:"));
           Serial.println(df, HEX);
-          Serial.print("(14) Q:");
+          Serial.print(F("(14) Q:"));
           Serial.print(q, HEX);
-          Serial.print("\t(15) T:");
+          Serial.print(F("\t(15) T:"));
           Serial.print(t, HEX);
         } else {
-          if (terminate != '=') Serial.print("R");
+          if (terminate != '=') Serial.print(F("R"));
           if (arg <= 0xF) {
             if (terminate == '=') {
               uint16_t v = readhexbuf(&terminate);
@@ -343,7 +364,7 @@ int monitor(void) {
                   uint16_t v = readhexbuf(&terminate);
                   x = v;
                 } else {
-                  Serial.print("X:");
+                  Serial.print(F("X:"));
                   Serial.print(x, HEX);
                 }
 
@@ -354,7 +375,7 @@ int monitor(void) {
                   uint16_t v = readhexbuf(&terminate);
                   p = v;
                 } else {
-                  Serial.print("P:");
+                  Serial.print(F("P:"));
                   Serial.print(p, HEX);
                 }
 
@@ -365,7 +386,7 @@ int monitor(void) {
                   uint16_t v = readhexbuf(&terminate);
                   d = v;
                 } else {
-                  Serial.print("D:");
+                  Serial.print(F("D:"));
                   Serial.print(d, HEX);
                 }
 
@@ -376,7 +397,7 @@ int monitor(void) {
                   uint16_t v = readhexbuf(&terminate);
                   df = v;
                 } else {
-                  Serial.print("DF:");
+                  Serial.print(F("DF:"));
                   Serial.print(df, HEX);
                 }
 
@@ -387,7 +408,7 @@ int monitor(void) {
                   uint16_t v = readhexbuf(&terminate);
                   q = v;
                 } else {
-                  Serial.print("Q:");
+                  Serial.print(F("Q:"));
                   Serial.print(q, HEX);
                 }
 
@@ -396,7 +417,7 @@ int monitor(void) {
                   uint16_t v = readhexbuf(&terminate);
                   t = v;
                 } else {
-                  Serial.print("T:");
+                  Serial.print(F("T:"));
                   Serial.print(t, HEX);
                 }
 
@@ -451,7 +472,7 @@ int monitor(void) {
               if (terminate == '\r' || terminate == '=') {
                 Serial.print('\n');
                 print4hex(arg);
-                Serial.print(": ");
+                Serial.print(F(": "));
               }
               d = readhex(&terminate, 0);
               if (terminate != ';' || noread == 0)
@@ -464,11 +485,14 @@ int monitor(void) {
             if (arg2 == 0) arg2 = 0x100;
             limit = (arg + arg2) - 1;
             if (limit < arg) limit = 0xFFFF;  // wrapped around!
-            for (i = arg; i <= limit; i++) {
+            Serial.print(F("       0  1  2  3  4  5  6  7   8  9  A  B  C  D  E  F"));
+            for (i = arg; i <= limit; i++)
+            {
               if (ct % 16 == 0) {
+                if (ct!=16) adump(i - 16);
                 Serial.println();
                 print4hex(i);
-                Serial.print(": ");
+                Serial.print(F(": "));
               } else if (ct % 8 == 0) Serial.print(' ');
               ct++;
 
@@ -477,6 +501,7 @@ int monitor(void) {
               if (i == 0xFFFF) break;  // hit limit
               if (Serialread() == 0x1b) break;
             }
+            adump(i - 16);
           }
         }
         break;
@@ -484,7 +509,7 @@ int monitor(void) {
 
       default:
         Serial.print((char)cmd);
-        Serial.println("?");
+        Serial.println(F("?"));
     }
   }
 }
